@@ -4,89 +4,196 @@
 @section('page-subtitle', $conversation->subject ?? '')
 
 @section('content')
-<div style="max-width:760px; margin:0 auto;">
+@php
+  $me      = auth()->id();
+  $other   = $conversation->participants->first(fn($p) => $p->user_id !== $me);
+  $grouped = $messages->groupBy(fn($m) => $m->created_at->format('Y-m-d'));
 
-  {{-- En-tête conversation --}}
-  <div style="background:#fff; border:1px solid #d5d9d9; border-radius:6px; padding:14px 18px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-    <div style="display:flex; align-items:center; gap:12px;">
-      @php
-        $other = $conversation->participants->first(fn($p) => $p->user_id !== auth()->id());
-      @endphp
-      <div style="width:44px; height:44px; border-radius:50%; background:#dbeafe; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; flex-shrink:0;">
-        {{ $other ? strtoupper(substr($other->user->name ?? 'U', 0, 1)) : '?' }}
-      </div>
-      <div>
-        <p style="font-weight:700; color:#16191f; font-size:.9rem;">{{ $other?->user->name ?? 'Utilisateur' }}</p>
-        <p style="font-size:.75rem; color:#545b64;">{{ $other?->user->email }} · {{ ucfirst($other?->user->role ?? '') }}</p>
-      </div>
-    </div>
-    <div style="display:flex; align-items:center; gap:10px;">
-      @if($conversation->status === 'open')
-        <span style="background:#d1fae5; color:#065f46; font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:10px; display:flex; align-items:center; gap:5px;">
-          <span style="width:7px;height:7px;border-radius:50%;background:#1d8102;display:inline-block;animation:livepulse 1.5s infinite;"></span> Active
-        </span>
-        <form method="POST" action="{{ route('admin.chat.close', $conversation) }}" style="display:inline;">
-          @csrf
-          <button type="submit" style="font-size:.8rem; color:#d13212; background:none; border:none; cursor:pointer; padding:0;">Fermer la conversation</button>
-        </form>
-      @else
-        <span style="background:#fee2e2; color:#991b1b; font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:10px;">Fermée</span>
-      @endif
-      <a href="{{ route('admin.chat.index') }}" style="font-size:.8rem; color:#0073bb; text-decoration:none;">← Retour</a>
-    </div>
-  </div>
-
-  {{-- Zone messages --}}
-  <div id="chat-box" style="background:#fff; border:1px solid #d5d9d9; border-radius:6px; padding:18px; min-height:400px; max-height:520px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; margin-bottom:14px;">
-    @foreach($messages as $msg)
-      @php $isMe = $msg->sender_id === auth()->id(); @endphp
-      <div data-msg-id="{{ $msg->id }}">
-        @if($msg->type === 'system')
-          <div style="background:#fef3c7; color:#92400e; border-radius:8px; padding:7px 14px; font-size:.78rem; font-style:italic; text-align:center; max-width:420px; margin:0 auto;">{{ $msg->body }}</div>
-        @else
-          <div style="display:flex; flex-direction:column; align-items:{{ $isMe ? 'flex-end' : 'flex-start' }};">
-            @if(!$isMe)
-              <span style="font-size:.72rem; color:#545b64; margin-bottom:4px; padding-left:4px;">{{ $msg->sender->name }}</span>
-            @endif
-            <div style="background:{{ $isMe ? '#0073bb' : '#f0f0f0' }}; color:{{ $isMe ? '#fff' : '#16191f' }}; border-radius:{{ $isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px' }}; padding:10px 14px; max-width:340px; font-size:.85rem; line-height:1.45;">
-              {{ $msg->body }}
-            </div>
-            <span style="font-size:.68rem; color:#aab7b8; margin-top:4px; padding-{{ $isMe ? 'right' : 'left' }}:4px;">{{ $msg->created_at->format('d/m H:i') }}</span>
-          </div>
-        @endif
-      </div>
-    @endforeach
-    @if($messages->isEmpty())
-      <div style="text-align:center; color:#aab7b8; margin:auto;">
-        <i class="far fa-comment-dots" style="font-size:2rem; display:block; margin-bottom:8px;"></i>
-        <p style="font-size:.85rem;">Aucun message. Commencez la discussion !</p>
-      </div>
-    @endif
-  </div>
-
-  {{-- Zone saisie --}}
-  @if($conversation->status === 'open')
-  <form id="chat-form">
-    <div style="display:flex; gap:10px; align-items:flex-end;">
-      <textarea id="chat-input" rows="2" required placeholder="Votre message… (Ctrl+Entrée pour envoyer)"
-        style="flex:1; border:1.5px solid #d5d9d9; border-radius:6px; padding:10px 14px; font-size:.85rem; color:#16191f; outline:none; resize:none; transition:border-color .15s; line-height:1.5; font-family:inherit;"></textarea>
-      <button type="submit" style="height:46px; flex-shrink:0; background:#ff9900; color:#fff; border:none; border-radius:6px; padding:0 18px; font-weight:700; font-size:.85rem; cursor:pointer;">
-        <i class="fas fa-paper-plane"></i> Envoyer
-      </button>
-    </div>
-    <div style="font-size:.72rem; color:#aab7b8; margin-top:5px; display:flex; justify-content:space-between;">
-      <span id="sending-indicator" style="display:none; color:#0073bb;">⏳ Envoi en cours…</span>
-      <span></span>
-      <span id="poll-status"></span>
-    </div>
-  </form>
-  @endif
-
-</div>
+  // Couleurs par participant (pour distinguer visuellement)
+  $palette = ['#0073bb','#d13212','#1d8102','#8a2be2','#c25100','#00748c'];
+  $colors  = [];
+  $ci      = 0;
+  foreach ($conversation->participants as $p) {
+      $colors[$p->user_id] = $palette[$ci++ % count($palette)];
+  }
+@endphp
 
 <style>
 @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+#chat-wrap   { max-width:860px; margin:0 auto; display:flex; flex-direction:column; height:calc(100vh - 160px); min-height:520px; background:#fff; border:1px solid #d5d9d9; border-radius:6px; overflow:hidden; }
+
+/* Header */
+#chat-header { background:#232f3e; color:#fff; padding:10px 18px; display:flex; align-items:center; gap:12px; flex-shrink:0; }
+#chat-header .av { width:40px;height:40px;border-radius:50%;background:#37475a;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0; }
+#chat-header .name { font-weight:700; font-size:.9rem; }
+#chat-header .sub  { font-size:.72rem; opacity:.7; }
+
+/* Participants sidebar */
+#chat-body-wrap { display:flex; flex:1; overflow:hidden; }
+
+#participants { width:180px; flex-shrink:0; background:#f8f8f8; border-right:1px solid #d5d9d9; padding:12px 10px; overflow-y:auto; }
+#participants h4 { font-size:.7rem; font-weight:700; color:#545b64; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; }
+.p-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #eee; }
+.p-item:last-child { border:none; }
+.p-av  { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;flex-shrink:0; }
+.p-name { font-size:.76rem; font-weight:600; color:#16191f; }
+.p-role { font-size:.67rem; color:#545b64; }
+
+/* Messages zone */
+#msg-zone { flex:1; overflow-y:auto; padding:14px 18px; display:flex; flex-direction:column; gap:0; background:#fafafa; }
+
+/* Date separator */
+.date-sep { text-align:center; margin:14px 0 8px; position:relative; }
+.date-sep::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:#d5d9d9; }
+.date-sep span { position:relative; background:#fafafa; padding:0 10px; font-size:.72rem; color:#545b64; font-weight:600; }
+
+/* Message row */
+.msg-row { display:flex; gap:10px; padding:4px 0; }
+.msg-row.me { background:rgba(0,115,187,.03); border-radius:4px; }
+.msg-row + .msg-row.same-sender { margin-top:-2px; }
+.msg-row + .msg-row.same-sender .msg-av { visibility:hidden; }
+.msg-row + .msg-row.same-sender .msg-sender { display:none; }
+
+/* Avatar */
+.msg-av { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#fff;flex-shrink:0;margin-top:2px; }
+
+/* Content */
+.msg-content { flex:1; min-width:0; }
+.msg-header  { display:flex; align-items:baseline; gap:8px; margin-bottom:3px; }
+.msg-sender  { font-size:.8rem; font-weight:700; }
+.msg-time    { font-size:.68rem; color:#aab7b8; }
+.msg-me-badge{ font-size:.62rem; background:#0073bb; color:#fff; padding:1px 5px; border-radius:3px; margin-left:2px; }
+.msg-bubble  { display:inline-block; background:#fff; border:1px solid #e3e7e9; border-radius:0 8px 8px 8px; padding:8px 12px; font-size:.86rem; line-height:1.5; color:#16191f; max-width:680px; word-break:break-word; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.msg-row.me .msg-bubble { background:#e8f5fd; border-color:#b8d9f0; border-radius:8px 0 8px 8px; }
+.msg-system { text-align:center; font-size:.76rem; font-style:italic; color:#545b64; padding:6px 0; }
+
+/* Input */
+#chat-footer { background:#fff; border-top:1px solid #d5d9d9; padding:10px 14px; display:flex; align-items:flex-end; gap:10px; flex-shrink:0; }
+#chat-input  { flex:1; border:1.5px solid #d5d9d9; border-radius:6px; padding:9px 13px; font-size:.86rem; color:#16191f; outline:none; resize:none; max-height:120px; line-height:1.5; font-family:inherit; transition:border-color .15s; }
+#chat-input:focus { border-color:#0073bb; box-shadow:0 0 0 3px rgba(0,115,187,.1); }
+#send-btn { height:40px; padding:0 18px; background:#ff9900; color:#fff; border:none; border-radius:6px; font-weight:700; font-size:.85rem; cursor:pointer; white-space:nowrap; transition:background .15s; flex-shrink:0; }
+#send-btn:hover { background:#e68900; }
+#chat-hint { font-size:.7rem; color:#aab7b8; padding:2px 14px 4px; background:#fff; display:flex; justify-content:space-between; border-top:1px solid #f0f0f0; flex-shrink:0; }
 </style>
+
+<div id="chat-wrap">
+
+  {{-- Header --}}
+  <div id="chat-header">
+    <div class="av">{{ strtoupper(substr($other?->user->name ?? 'U', 0, 1)) }}</div>
+    <div style="flex:1;">
+      <div class="name">{{ $other?->user->name ?? 'Utilisateur' }}</div>
+      <div class="sub">{{ $other?->user->email ?? '' }} · {{ ucfirst($other?->user->role ?? '') }}</div>
+    </div>
+    @if($conversation->status === 'open')
+      <span style="font-size:.72rem;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:10px;display:flex;align-items:center;gap:5px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#1d8102;display:inline-block;animation:livepulse 1.5s infinite;"></span> En direct
+      </span>
+      <form method="POST" action="{{ route('admin.chat.close', $conversation) }}" style="margin-left:8px;">
+        @csrf
+        <button type="submit" style="background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:5px;padding:4px 10px;font-size:.75rem;cursor:pointer;">Fermer</button>
+      </form>
+    @else
+      <span style="font-size:.72rem;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:10px;">Fermée</span>
+    @endif
+    <a href="{{ route('admin.chat.index') }}" style="color:rgba(255,255,255,.7);font-size:.8rem;text-decoration:none;margin-left:10px;">← Retour</a>
+  </div>
+
+  <div id="chat-body-wrap">
+
+    {{-- Barre participants --}}
+    <div id="participants">
+      <h4>Participants</h4>
+      @foreach($conversation->participants as $p)
+        <div class="p-item">
+          <div class="p-av" style="background:{{ $colors[$p->user_id] ?? '#545b64' }}">
+            {{ strtoupper(substr($p->user->name ?? 'U', 0, 1)) }}
+          </div>
+          <div>
+            <div class="p-name">{{ $p->user->name ?? 'Inconnu' }} @if($p->user_id === $me)<span style="font-size:.62rem;color:#0073bb;">(moi)</span>@endif</div>
+            <div class="p-role">{{ ucfirst($p->user->role ?? '') }}</div>
+          </div>
+        </div>
+      @endforeach
+    </div>
+
+    {{-- Zone messages --}}
+    <div id="msg-zone">
+      @php $prevSender = null; $prevDate = null; @endphp
+
+      @foreach($messages as $msg)
+        @php
+          $isMe       = $msg->sender_id === $me;
+          $msgDate    = $msg->created_at->format('Y-m-d');
+          $sameSender = ($msg->sender_id === $prevSender);
+          $color      = $colors[$msg->sender_id] ?? '#545b64';
+          $initials   = strtoupper(substr($msg->sender->name ?? 'U', 0, 1));
+        @endphp
+
+        {{-- Séparateur de date --}}
+        @if($msgDate !== $prevDate)
+          <div class="date-sep">
+            <span>
+              @php
+                $d = $msg->created_at;
+                if($d->isToday())         echo 'Aujourd\'hui';
+                elseif($d->isYesterday()) echo 'Hier';
+                else                       echo $d->translatedFormat('d F Y');
+              @endphp
+            </span>
+          </div>
+          @php $prevDate = $msgDate; $prevSender = null; @endphp
+        @endif
+
+        @if($msg->type === 'system')
+          <div class="msg-system">— {{ $msg->body }} —</div>
+          @php $prevSender = null; @endphp
+        @else
+          <div class="msg-row {{ $isMe ? 'me' : '' }} {{ $sameSender ? 'same-sender' : '' }}" data-msg-id="{{ $msg->id }}">
+            <div class="msg-av" style="background:{{ $color }}">{{ $initials }}</div>
+            <div class="msg-content">
+              <div class="msg-header">
+                <span class="msg-sender" style="color:{{ $color }}">{{ $msg->sender->name ?? 'Inconnu' }}</span>
+                @if($isMe)<span class="msg-me-badge">Vous</span>@endif
+                <span class="msg-time">{{ $msg->created_at->format('H:i') }}</span>
+                @if($isMe && $msg->is_read)<span style="font-size:.68rem;color:#0073bb;">✓✓ Lu</span>@endif
+              </div>
+              <div class="msg-bubble">{{ $msg->body }}</div>
+            </div>
+          </div>
+          @php $prevSender = $msg->sender_id; @endphp
+        @endif
+      @endforeach
+
+      @if($messages->isEmpty())
+        <div style="text-align:center;margin:auto;color:#aab7b8;padding:40px 0;">
+          <i class="far fa-comment-dots" style="font-size:2.5rem;display:block;margin-bottom:10px;"></i>
+          <p style="font-size:.85rem;">Aucun message. Commencez la discussion !</p>
+        </div>
+      @endif
+    </div>
+
+  </div>{{-- /chat-body-wrap --}}
+
+  {{-- Input --}}
+  @if($conversation->status === 'open')
+  <div id="chat-footer">
+    <textarea id="chat-input" rows="1" placeholder="Tapez un message… (Entrée pour envoyer, Shift+Entrée pour saut de ligne)"></textarea>
+    <button id="send-btn"><i class="fas fa-paper-plane"></i> Envoyer</button>
+  </div>
+  <div id="chat-hint">
+    <span id="sending-label" style="display:none;color:#0073bb;">⏳ Envoi…</span>
+    <span></span>
+    <span id="poll-status"></span>
+  </div>
+  @else
+    <div style="background:#f8f9fa;padding:12px;text-align:center;color:#545b64;font-size:.85rem;flex-shrink:0;">
+      <i class="fas fa-lock" style="margin-right:6px;"></i> Conversation fermée.
+    </div>
+  @endif
+
+</div>
 
 @section('scripts')
 <script>
@@ -96,140 +203,136 @@
   const SEND_URL = '{{ route("admin.chat.message", $conversation) }}';
   const CSRF     = '{{ csrf_token() }}';
 
-  const chatBox   = document.getElementById('chat-box');
-  const form      = document.getElementById('chat-form');
-  const input     = document.getElementById('chat-input');
-  const sendingEl = document.getElementById('sending-indicator');
-  const pollEl    = document.getElementById('poll-status');
+  const COLORS   = @json($colors);
+  const PARTICIPANTS = @json($conversation->participants->pluck('user.name','user_id'));
 
-  // ── Son ping (Web Audio API — aucun fichier externe) ──────────────────
+  const zone     = document.getElementById('msg-zone');
+  const input    = document.getElementById('chat-input');
+  const sendBtn  = document.getElementById('send-btn');
+  const sendLbl  = document.getElementById('sending-label');
+  const pollEl   = document.getElementById('poll-status');
+
+  // Son
   function playPing() {
     try {
-      const ctx  = new (window.AudioContext || window.webkitAudioContext)();
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.4, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.45);
-    } catch(e) {}
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';
+      o.frequency.setValueAtTime(900,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(500,ctx.currentTime+.12);
+      g.gain.setValueAtTime(.3,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);
+      o.start();o.stop(ctx.currentTime+.4);
+    }catch(e){}
   }
 
-  // ── Dernier ID connu (initialisé depuis PHP) ──────────────────────────
-  let lastId = {{ $messages->count() ? $messages->last()->id : 0 }};
+  // ID initial
+  let lastId = 0;
+  document.querySelectorAll('[data-msg-id]').forEach(el => lastId = Math.max(lastId, +el.dataset.msgId));
+  let lastSenderId = null;
 
-  // ── Scroll bas ────────────────────────────────────────────────────────
   function scrollBottom(force) {
-    const atBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 140;
-    if (force || atBottom) chatBox.scrollTop = chatBox.scrollHeight;
+    const atBottom = zone.scrollHeight - zone.scrollTop - zone.clientHeight < 180;
+    if (force || atBottom) zone.scrollTop = zone.scrollHeight;
   }
   scrollBottom(true);
 
-  // ── Echapper HTML ─────────────────────────────────────────────────────
-  function esc(s) {
-    return String(s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  // ── Construire un élément message ────────────────────────────────────
-  function buildMsg(msg) {
-    const isMe = msg.sender_id === ME_ID;
-    const wrap = document.createElement('div');
-    wrap.dataset.msgId = msg.id;
+  function initials(name) { return (name||'U').charAt(0).toUpperCase(); }
+
+  function buildRow(msg) {
+    const isMe   = msg.sender_id === ME_ID;
+    const color  = COLORS[msg.sender_id] || '#545b64';
+    const name   = PARTICIPANTS[msg.sender_id] || msg.sender || 'Inconnu';
+    const same   = msg.sender_id === lastSenderId;
+    lastSenderId = msg.sender_id;
 
     if (msg.type === 'system') {
-      wrap.innerHTML = `<div style="background:#fef3c7;color:#92400e;border-radius:8px;padding:7px 14px;font-size:.78rem;font-style:italic;text-align:center;max-width:420px;margin:0 auto;">${esc(msg.body)}</div>`;
-    } else {
-      const nameRow = !isMe ? `<span style="font-size:.72rem;color:#545b64;margin-bottom:4px;padding-left:4px;">${esc(msg.sender)}</span>` : '';
-      const bgColor = isMe ? '#0073bb' : '#f0f0f0';
-      const txtColor = isMe ? '#fff' : '#16191f';
-      const radius = isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px';
-      const side = isMe ? 'right' : 'left';
-      wrap.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};">
-          ${nameRow}
-          <div style="background:${bgColor};color:${txtColor};border-radius:${radius};padding:10px 14px;max-width:340px;font-size:.85rem;line-height:1.45;">${esc(msg.body)}</div>
-          <span style="font-size:.68rem;color:#aab7b8;margin-top:4px;padding-${side}:4px;">${msg.created_at}</span>
-        </div>`;
+      const d = document.createElement('div');
+      d.className = 'msg-system';
+      d.textContent = `— ${msg.body} —`;
+      lastSenderId = null;
+      return d;
     }
-    return wrap;
+
+    const row = document.createElement('div');
+    row.className = `msg-row${isMe?' me':''}${same?' same-sender':''}`;
+    row.dataset.msgId = msg.id;
+
+    const avVis = same ? 'visibility:hidden' : '';
+    const senderHtml = same ? '' : `
+      <div class="msg-header">
+        <span class="msg-sender" style="color:${color}">${esc(name)}</span>
+        ${isMe ? '<span class="msg-me-badge">Vous</span>' : ''}
+        <span class="msg-time">${msg.created_at}</span>
+      </div>`;
+
+    row.innerHTML = `
+      <div class="msg-av" style="background:${color};${avVis}">${initials(name)}</div>
+      <div class="msg-content">
+        ${senderHtml}
+        <div class="msg-bubble">${esc(msg.body)}</div>
+      </div>`;
+    return row;
   }
 
-  // ── Polling toutes les 3 s ────────────────────────────────────────────
+  // Polling 3 s
   async function poll() {
     try {
       const res = await fetch(`${POLL_URL}?last_id=${lastId}`, {
-        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        headers: {'Accept':'application/json','X-CSRF-TOKEN':CSRF}
       });
       if (!res.ok) return;
       const { messages } = await res.json();
       if (messages && messages.length) {
         const fromOther = messages.some(m => m.sender_id !== ME_ID);
-        messages.forEach(m => {
-          chatBox.appendChild(buildMsg(m));
-          lastId = Math.max(lastId, m.id);
-        });
+        messages.forEach(m => { zone.appendChild(buildRow(m)); lastId = Math.max(lastId, m.id); });
         scrollBottom(false);
         if (fromOther) playPing();
         const t = new Date();
-        if (pollEl) pollEl.textContent = `Actualisé à ${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}`;
+        if (pollEl) pollEl.textContent = `Actualisé ${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}`;
       }
-    } catch(e) {}
+    } catch(e){}
   }
 
   const pollTimer = setInterval(poll, 3000);
   window.addEventListener('beforeunload', () => clearInterval(pollTimer));
 
-  // ── Envoi AJAX ────────────────────────────────────────────────────────
-  if (form) {
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const body = input.value.trim();
-      if (!body) return;
-      input.value = '';
-      if (sendingEl) sendingEl.style.display = 'inline';
+  async function sendMsg() {
+    const txt = input.value.trim();
+    if (!txt) return;
+    input.value = ''; autoResize();
+    if (sendLbl) sendLbl.style.display = 'inline';
 
-      try {
-        const res = await fetch(SEND_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept':       'application/json',
-            'X-CSRF-TOKEN': CSRF,
-          },
-          body: JSON.stringify({ body }),
-        });
-        if (res.ok) {
-          const msg = await res.json();
-          chatBox.appendChild(buildMsg(msg));
-          lastId = Math.max(lastId, msg.id);
-          scrollBottom(true);
-        } else {
-          input.value = body;
-          alert('Erreur lors de l\'envoi.');
-        }
-      } catch(e) {
-        input.value = body;
-        alert('Erreur réseau.');
-      } finally {
-        if (sendingEl) sendingEl.style.display = 'none';
-        input.focus();
-      }
-    });
+    try {
+      const res = await fetch(SEND_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':CSRF},
+        body: JSON.stringify({ body: txt }),
+      });
+      if (res.ok) {
+        const msg = await res.json();
+        zone.appendChild(buildRow(msg));
+        lastId = Math.max(lastId, msg.id);
+        scrollBottom(true);
+      } else { input.value = txt; }
+    } catch(e) { input.value = txt; }
+    finally { if (sendLbl) sendLbl.style.display = 'none'; input.focus(); }
+  }
 
-    // Ctrl+Entrée pour envoyer
-    input.addEventListener('keydown', function(e) {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') form.requestSubmit();
-    });
-
-    // Focus automatique
+  if (sendBtn) sendBtn.addEventListener('click', sendMsg);
+  if (input) {
+    input.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} });
+    input.addEventListener('input', autoResize);
     input.focus();
+  }
+
+  function autoResize() {
+    if (!input) return;
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
   }
 })();
 </script>
