@@ -98,6 +98,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::prefix('chat')->name('chat.')->group(function () {
         Route::get('/',                          [Admin\AdminChatController::class, 'index'])->name('index');
         Route::get('/{conversation}',            [Admin\AdminChatController::class, 'show'])->name('show');
+        Route::get('/{conversation}/messages',   [Admin\AdminChatController::class, 'pollMessages'])->name('poll');
         Route::post('/{conversation}/message',   [Admin\AdminChatController::class, 'sendMessage'])->name('message');
         Route::post('/{conversation}/close',     [Admin\AdminChatController::class, 'close'])->name('close');
     });
@@ -179,9 +180,10 @@ Route::prefix('author')->name('author.')->middleware(['auth','role:author,admin'
 
     // Chat auteur (admin + clients)
     Route::prefix('chat')->name('chat.')->group(function () {
-        Route::get('/',                        [Author\AuthorChatController::class, 'index'])->name('index');
-        Route::get('/{conversation}',          [Author\AuthorChatController::class, 'show'])->name('show');
-        Route::post('/{conversation}/message', [Author\AuthorChatController::class, 'sendMessage'])->name('message');
-        Route::post('/start-admin',            [Author\AuthorChatController::class, 'startWithAdmin'])->name('start-admin');
+        Route::get('/',                          [Author\AuthorChatController::class, 'index'])->name('index');
+        Route::get('/{conversation}',            [Author\AuthorChatController::class, 'show'])->name('show');
+        Route::get('/{conversation}/messages',   [Author\AuthorChatController::class, 'pollMessages'])->name('poll');
+        Route::post('/{conversation}/message',   [Author\AuthorChatController::class, 'sendMessage'])->name('message');
+        Route::post('/start-admin',              [Author\AuthorChatController::class, 'startWithAdmin'])->name('start-admin');
     });
 });

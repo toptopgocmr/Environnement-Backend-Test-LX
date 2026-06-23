@@ -71,9 +71,51 @@ class AuthorChatController extends Controller
 
         $request->validate(['body' => 'required|string|max:2000']);
 
-        $this->chatService->sendMessage($conversation, $author->id, $request->body);
+        $msg = $this->chatService->sendMessage($conversation, $author->id, $request->body);
+
+        if ($request->expectsJson()) {
+            $msg->load('sender:id,name,avatar');
+            return response()->json([
+                'id'         => $msg->id,
+                'body'       => $msg->body,
+                'sender_id'  => $msg->sender_id,
+                'sender'     => $msg->sender->name ?? '',
+                'created_at' => $msg->created_at->format('d/m H:i'),
+                'type'       => $msg->type ?? 'text',
+            ]);
+        }
 
         return back()->with('success', 'Message envoyé.');
+    }
+
+    /** Polling — retourne les messages après un certain ID */
+    public function pollMessages(Request $request, ChatConversation $conversation)
+    {
+        $author = auth()->user();
+
+        abort_unless(
+            $conversation->participants()->where('user_id', $author->id)->exists(),
+            403
+        );
+
+        $lastId = (int) $request->get('last_id', 0);
+        $msgs   = $conversation->messages()
+            ->with('sender:id,name,avatar')
+            ->where('id', '>', $lastId)
+            ->orderBy('id')
+            ->get()
+            ->map(fn($m) => [
+                'id'         => $m->id,
+                'body'       => $m->body,
+                'sender_id'  => $m->sender_id,
+                'sender'     => $m->sender->name ?? '',
+                'created_at' => $m->created_at->format('d/m H:i'),
+                'type'       => $m->type ?? 'text',
+            ]);
+
+        $this->chatService->markAsRead($conversation, $author->id);
+
+        return response()->json(['messages' => $msgs]);
     }
 
     /** Ouvre/retrouve une conversation auteur → admin */
