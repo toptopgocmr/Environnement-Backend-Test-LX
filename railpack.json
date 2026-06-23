@@ -1,22 +1,9 @@
 {
-  "php": {
-    "extensions": [
-      "ctype",
-      "curl",
-      "dom",
-      "exif",
-      "fileinfo",
-      "filter",
-      "gd",
-      "hash",
-      "mbstring",
-      "openssl",
-      "pcre",
-      "pdo",
-      "pdo_mysql",
-      "session",
-      "tokenizer",
-      "xml"
-    ]
+  "steps": {
+    "extensions": {
+      "commands": [
+        "install-php-extensions gd exif ctype curl dom fileinfo filter hash mbstring openssl pcre pdo pdo_mysql session tokenizer xml"
+      ]
+    }
   }
 }
