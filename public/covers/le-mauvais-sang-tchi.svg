@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <defs>
+    <linearGradient id="glemau" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#3730a3"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="300" fill="url(#glemau)"/>
+  <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.2"/>
+  <rect x="0" y="14" width="200" height="36" fill="rgba(0,0,0,0.25)"/>
+  <text x="100" y="37" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#f9a8d4" font-weight="bold" letter-spacing="1">TCHICAYA U TAM SI</text>
+  <line x1="20" y1="96" x2="180" y2="96" stroke="#818cf8" stroke-width="1.2" opacity="0.6"/>
+  <text x="100" y="134" text-anchor="middle" font-family="Georgia,serif" font-size="17" font-weight="bold" fill="#e0e7ff" letter-spacing="0.5">Le Mauvais Sang</text>
+    
+  <line x1="20" y1="215" x2="180" y2="215" stroke="#818cf8" stroke-width="0.8" opacity="0.4"/>
+  <rect x="0" y="258" width="200" height="42" fill="rgba(0,0,0,0.4)"/>
+  <text x="100" y="275" text-anchor="middle" font-family="Georgia,serif" font-size="9" fill="#818cf8" opacity="0.8" letter-spacing="2">PIERRE JEAN OSWALD</text>
+  <text x="100" y="290" text-anchor="middle" font-family="Georgia,serif" font-size="9" fill="white" opacity="0.5">1955</text>
+  <text x="100" y="252" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="white" opacity="0.2" letter-spacing="3">LIREX · EDITION NUMERIQUE</text>
+</svg>

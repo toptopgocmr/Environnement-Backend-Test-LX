@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <linearGradient id="sky_j" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7ab0d4"/>
+      <stop offset="40%" stop-color="#b0d0e8"/>
+    </linearGradient>
+    <linearGradient id="veg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c84090"/>
+      <stop offset="100%" stop-color="#e060a0"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky -->
+  <rect width="400" height="600" fill="url(#sky_j)"/>
+  <!-- Infrared vegetation (pink/magenta) covering lower 2/3 -->
+  <rect x="0" y="180" width="400" height="420" fill="url(#veg)"/>
+  <!-- Vegetation texture - leaves/stalks -->
+  <ellipse cx="60" cy="300" rx="50" ry="80" fill="#d050a0" opacity="0.7"/>
+  <ellipse cx="340" cy="280" rx="55" ry="90" fill="#c84090" opacity="0.8"/>
+  <ellipse cx="200" cy="350" rx="60" ry="70" fill="#e070b0" opacity="0.6"/>
+  <ellipse cx="100" cy="400" rx="45" ry="100" fill="#b83080" opacity="0.6"/>
+  <ellipse cx="300" cy="380" rx="50" ry="110" fill="#d04898" opacity="0.7"/>
+  <ellipse cx="180" cy="480" rx="70" ry="80" fill="#c84090" opacity="0.5"/>
+  <!-- Root/stump structure boy sits on -->
+  <path d="M160,330 Q200,310 240,330 L250,400 Q200,380 150,400 Z" fill="#7a5828"/>
+  <path d="M155,380 L145,430 Q160,425 165,400 Z" fill="#5a3818"/>
+  <path d="M245,380 L255,430 Q240,425 235,400 Z" fill="#5a3818"/>
+  <path d="M170,390 L165,450 Q180,440 182,410 Z" fill="#5a3818"/>
+  <path d="M230,390 L235,450 Q220,440 218,410 Z" fill="#5a3818"/>
+  <!-- Child soldier silhouette -->
+  <!-- Body -->
+  <rect x="180" y="265" width="40" height="55" rx="8" fill="#8a6020" opacity="0.95"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="248" rx="22" ry="26" fill="#6a4010"/>
+  <!-- Military cap -->
+  <path d="M178,240 Q200,225 222,240 L225,248 Q200,238 175,248 Z" fill="#5a4818"/>
+  <!-- AK-47 rifle -->
+  <rect x="215" y="255" width="80" height="8" rx="3" fill="#3a3028"/>
+  <rect x="275" y="248" width="10" height="22" rx="2" fill="#3a3028"/>
+  <rect x="215" y="255" width="30" height="14" rx="2" fill="#5a4838"/>
+  <!-- Arm holding rifle -->
+  <path d="M220,275 Q245,270 290,260" stroke="#6a4010" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <!-- Legs -->
+  <rect x="185" y="318" width="14" height="28" rx="5" fill="#8a6020"/>
+  <rect x="202" y="318" width="14" height="28" rx="5" fill="#7a5018"/>
+  <!-- Boots -->
+  <rect x="183" y="340" width="16" height="14" rx="3" fill="#2a2018"/>
+  <rect x="200" y="340" width="16" height="14" rx="3" fill="#2a2018"/>
+  <!-- BABEL badge -->
+  <rect x="140" y="425" width="70" height="70" rx="5" fill="white"/>
+  <polygon points="175,435 185,455 175,475 165,455" fill="#e83020"/>
+  <text x="175" y="487" font-family="Arial, sans-serif" font-size="11" font-weight="bold"
+        fill="#2a2020" text-anchor="middle">BABEL</text>
+  <!-- Author top -->
+  <text x="200" y="42" font-family="Georgia, serif" font-size="22" font-weight="bold"
+        fill="#1a1a2a" text-anchor="middle" letter-spacing="3">EMMANUEL</text>
+  <text x="200" y="68" font-family="Georgia, serif" font-size="22" font-weight="bold"
+        fill="#1a1a2a" text-anchor="middle" letter-spacing="3">DONGALA</text>
+  <!-- Title -->
+  <text x="200" y="535" font-family="Georgia, serif" font-size="26" font-style="italic"
+        fill="white" text-anchor="middle">Johnny</text>
+  <text x="200" y="562" font-family="Georgia, serif" font-size="26" font-style="italic"
+        fill="white" text-anchor="middle">Chien Méchant</text>
+  <text x="200" y="585" font-family="Arial, sans-serif" font-size="12"
+        fill="rgba(255,255,255,0.8)" text-anchor="middle">roman</text>
+</svg>

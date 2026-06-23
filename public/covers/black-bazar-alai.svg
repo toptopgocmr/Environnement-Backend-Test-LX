@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <linearGradient id="bg_bb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a0a2a"/>
+      <stop offset="100%" stop-color="#0a0a1a"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="600" fill="url(#bg_bb)"/>
+  <!-- Neon-style city lights -->
+  <circle cx="60" cy="80" r="3" fill="#e8c020" opacity="0.8"/>
+  <circle cx="340" cy="60" r="3" fill="#e82040" opacity="0.8"/>
+  <circle cx="200" cy="50" r="4" fill="#20a0e8" opacity="0.6"/>
+  <!-- Stylized Eiffel Tower silhouette (faint) -->
+  <path d="M200,60 L185,180 L175,200 L225,200 L215,180 Z" fill="#2a1a3a" opacity="0.4"/>
+  <path d="M175,200 L155,300 L245,300 L225,200 Z" fill="#2a1a3a" opacity="0.4"/>
+  <!-- Sapeur figure - elegant man in colorful suit -->
+  <!-- Suit body - electric blue -->
+  <rect x="160" y="260" width="80" height="120" rx="8" fill="#1840c0"/>
+  <!-- Lapels -->
+  <path d="M200,260 L178,290 L200,310 L222,290 Z" fill="#1a3ab0"/>
+  <!-- White shirt -->
+  <rect x="192" y="265" width="16" height="45" fill="white"/>
+  <!-- Tie - red -->
+  <path d="M200,268 L195,310 L200,315 L205,310 Z" fill="#c02020"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="235" rx="28" ry="32" fill="#2a1508"/>
+  <!-- Stylish hat -->
+  <ellipse cx="200" cy="208" rx="36" ry="10" fill="#c08020"/>
+  <rect x="180" y="198" width="40" height="18" rx="5" fill="#b07018"/>
+  <!-- Pants - same blue -->
+  <rect x="163" y="375" width="34" height="90" rx="6" fill="#1840c0"/>
+  <rect x="203" y="375" width="34" height="90" rx="6" fill="#1628a0"/>
+  <!-- Shoes - pointed -->
+  <path d="M163,455 Q150,470 145,475 L180,470 L197,455 Z" fill="#c08020"/>
+  <path d="M237,455 Q250,470 255,475 L220,470 L203,455 Z" fill="#8a1818"/>
+  <!-- Arms -->
+  <rect x="130" y="265" width="30" height="80" rx="10" fill="#1840c0"/>
+  <rect x="240" y="265" width="30" height="80" rx="10" fill="#1840c0"/>
+  <!-- Hands -->
+  <ellipse cx="145" cy="348" rx="14" ry="10" fill="#2a1508"/>
+  <ellipse cx="255" cy="348" rx="14" ry="10" fill="#2a1508"/>
+  <!-- Author -->
+  <text x="200" y="62" font-family="Georgia, serif" font-size="20" font-weight="bold"
+        fill="white" text-anchor="middle" letter-spacing="3">ALAIN MABANCKOU</text>
+  <!-- Title -->
+  <text x="200" y="510" font-family="Arial Black, sans-serif" font-size="52" font-weight="900"
+        fill="white" text-anchor="middle">BLACK</text>
+  <text x="200" y="558" font-family="Arial Black, sans-serif" font-size="52" font-weight="900"
+        fill="#e8c020" text-anchor="middle">BAZAR</text>
+  <!-- Publisher -->
+  <text x="200" y="588" font-family="Arial, sans-serif" font-size="13"
+        fill="rgba(255,255,255,0.6)" text-anchor="middle">Editions du Seuil</text>
+</svg>

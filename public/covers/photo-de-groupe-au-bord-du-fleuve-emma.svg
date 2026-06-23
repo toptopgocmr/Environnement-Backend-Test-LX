@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <linearGradient id="bg_pg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a1808"/>
+      <stop offset="50%" stop-color="#152010"/>
+      <stop offset="100%" stop-color="#0a1205"/>
+    </linearGradient>
+    <radialGradient id="light_pg" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#601020" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  <!-- Dark forest background -->
+  <rect width="400" height="600" fill="url(#bg_pg)"/>
+  <!-- Foliage top -->
+  <ellipse cx="80" cy="60" rx="120" ry="100" fill="#0a1808" opacity="0.9"/>
+  <ellipse cx="320" cy="40" rx="130" ry="90" fill="#0d2010" opacity="0.9"/>
+  <ellipse cx="200" cy="80" rx="150" ry="80" fill="#0a1808" opacity="0.8"/>
+  <ellipse cx="50" cy="150" rx="80" ry="120" fill="#0a1808" opacity="0.85"/>
+  <ellipse cx="360" cy="130" rx="90" ry="130" fill="#0a1808" opacity="0.85"/>
+  <!-- Warm light glow (red tones on people) -->
+  <rect width="400" height="600" fill="url(#light_pg)"/>
+  <!-- Three figures in red/warm light -->
+  <!-- Figure 1 left (child) -->
+  <ellipse cx="130" cy="330" rx="25" ry="30" fill="#8a3020" opacity="0.9"/>
+  <rect x="110" y="355" width="40" height="70" rx="10" fill="#c04030" opacity="0.85"/>
+  <!-- Figure 2 center (woman with headwrap) -->
+  <ellipse cx="210" cy="295" rx="28" ry="34" fill="#8a3020" opacity="0.9"/>
+  <!-- Headwrap -->
+  <path d="M182,285 Q210,265 238,285 Q235,298 210,292 Q185,298 182,285 Z" fill="#c84030"/>
+  <path d="M182,285 Q210,270 238,285" fill="none" stroke="#e05040" stroke-width="4"/>
+  <rect x="185" y="325" width="50" height="75" rx="10" fill="#c04030" opacity="0.85"/>
+  <!-- Figure 3 right -->
+  <ellipse cx="285" cy="315" rx="24" ry="28" fill="#7a2818" opacity="0.9"/>
+  <rect x="263" y="338" width="44" height="65" rx="10" fill="#b03828" opacity="0.85"/>
+  <!-- Arms/hands holding each other -->
+  <path d="M155,380 Q185,395 210,400" stroke="#8a3020" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M258,390 Q235,400 210,400" stroke="#7a2818" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <!-- Ground shadow -->
+  <ellipse cx="200" cy="440" rx="130" ry="20" fill="#050d03" opacity="0.7"/>
+  <!-- Author name top -->
+  <text x="200" y="55" font-family="Georgia, serif" font-size="26" font-weight="bold"
+        fill="white" text-anchor="middle" letter-spacing="2">EMMANUEL</text>
+  <text x="200" y="85" font-family="Georgia, serif" font-size="26" font-weight="bold"
+        fill="white" text-anchor="middle" letter-spacing="2">DONGALA</text>
+  <!-- Title bottom -->
+  <text x="200" y="490" font-family="Georgia, serif" font-size="20" font-style="italic"
+        fill="white" text-anchor="middle">Photo de groupe</text>
+  <text x="200" y="518" font-family="Georgia, serif" font-size="20" font-style="italic"
+        fill="white" text-anchor="middle">au bord du fleuve</text>
+  <text x="200" y="545" font-family="Arial, sans-serif" font-size="13" font-style="italic"
+        fill="rgba(255,255,255,0.7)" text-anchor="middle">roman</text>
+  <!-- Actes Sud bottom -->
+  <rect x="0" y="565" width="400" height="35" fill="#1a1a1a"/>
+  <text x="200" y="587" font-family="Georgia, serif" font-size="16" font-style="italic"
+        fill="white" text-anchor="middle">ACTES SUD</text>
+</svg>

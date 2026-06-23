@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <defs>
+    <linearGradient id="gjazze" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7c2d12"/>
+      <stop offset="100%" stop-color="#9a3412"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="300" fill="url(#gjazze)"/>
+  <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="#fb923c" stroke-width="1.5" opacity="0.2"/>
+  <rect x="0" y="14" width="200" height="36" fill="rgba(0,0,0,0.25)"/>
+  <text x="100" y="37" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#fbbf24" font-weight="bold" letter-spacing="1">EMMANUEL DONGALA</text>
+  <line x1="20" y1="96" x2="180" y2="96" stroke="#fb923c" stroke-width="1.2" opacity="0.6"/>
+  <text x="100" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="17" font-weight="bold" fill="#fed7aa" letter-spacing="0.5">Jazz et Vin de</text>
+    <text x="100" y="150" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="#fed7aa" letter-spacing="0.5">Palme</text>
+    
+  <line x1="20" y1="215" x2="180" y2="215" stroke="#fb923c" stroke-width="0.8" opacity="0.4"/>
+  <rect x="0" y="258" width="200" height="42" fill="rgba(0,0,0,0.4)"/>
+  <text x="100" y="275" text-anchor="middle" font-family="Georgia,serif" font-size="9" fill="#fb923c" opacity="0.8" letter-spacing="2">HATIER</text>
+  <text x="100" y="290" text-anchor="middle" font-family="Georgia,serif" font-size="9" fill="white" opacity="0.5">1982</text>
+  <text x="100" y="252" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="white" opacity="0.2" letter-spacing="3">LIREX · EDITION NUMERIQUE</text>
+</svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&amp;display=swap');
+    </style>
+  </defs>
+  <!-- Background white -->
+  <rect width="400" height="600" fill="#f5f0e8"/>
+  <!-- Triangle grid - top half -->
+  <!-- Row 1: teal / cream / teal / cream -->
+  <polygon points="0,0 200,0 0,150" fill="#5bbcb8"/>
+  <polygon points="200,0 400,0 400,150 200,150" fill="#f5f0e8"/>
+  <polygon points="0,0 200,0 200,150" fill="#f5f0e8"/>
+  <polygon points="400,0 400,150 200,150" fill="#5bbcb8"/>
+  <!-- Row 2: orange / cream -->
+  <polygon points="0,150 200,150 0,300" fill="#e8681a"/>
+  <polygon points="200,150 400,150 400,300 200,300" fill="#f5f0e8"/>
+  <polygon points="0,150 200,150 200,300" fill="#f5f0e8"/>
+  <polygon points="400,150 400,300 200,300" fill="#e8681a"/>
+  <!-- Row 3: yellow / cream -->
+  <polygon points="0,300 200,300 0,450" fill="#f0c030"/>
+  <polygon points="200,300 400,300 400,450 200,450" fill="#f5f0e8"/>
+  <polygon points="0,300 200,300 200,450" fill="#f5f0e8"/>
+  <polygon points="400,300 400,450 200,450" fill="#f0c030"/>
+  <!-- Row 4: pink / cream -->
+  <polygon points="0,450 200,450 0,600" fill="#e8207a"/>
+  <polygon points="200,450 400,450 400,600 200,600" fill="#f5f0e8"/>
+  <polygon points="0,450 200,450 200,600" fill="#f5f0e8"/>
+  <polygon points="400,450 400,600 200,600" fill="#e8207a"/>
+  <!-- Author name -->
+  <text x="200" y="72" font-family="Georgia, serif" font-size="22" font-weight="bold" 
+        fill="#1a1a1a" text-anchor="middle" letter-spacing="4">FISTON</text>
+  <text x="200" y="100" font-family="Georgia, serif" font-size="22" font-weight="bold" 
+        fill="#1a1a1a" text-anchor="middle" letter-spacing="4">MWANZA</text>
+  <text x="200" y="128" font-family="Georgia, serif" font-size="22" font-weight="bold" 
+        fill="#1a1a1a" text-anchor="middle" letter-spacing="4">MUJILA</text>
+  <!-- Big TRAM -->
+  <text x="200" y="360" font-family="Arial Black, sans-serif" font-size="120" font-weight="900" 
+        fill="#1a1a1a" text-anchor="middle">TRAM</text>
+  <!-- Big 83 with outline -->
+  <text x="200" y="480" font-family="Arial Black, sans-serif" font-size="130" font-weight="900" 
+        fill="#f0c030" text-anchor="middle" stroke="#1a1a1a" stroke-width="6" paint-order="stroke">83</text>
+  <!-- Bottom label -->
+  <text x="200" y="560" font-family="Georgia, serif" font-size="16" font-style="italic"
+        fill="#1a1a1a" text-anchor="middle">Roman</text>
+  <text x="200" y="582" font-family="Georgia, serif" font-size="13"
+        fill="#1a1a1a" text-anchor="middle">METAILIE</text>
+</svg>

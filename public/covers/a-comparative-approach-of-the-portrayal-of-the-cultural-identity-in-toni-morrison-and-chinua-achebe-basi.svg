@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <defs>
+    <linearGradient id="gacomp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c4a6e"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="300" fill="url(#gacomp)"/>
+  <rect x="8" y="8" width="184" height="284" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.5"/><rect x="14" y="14" width="172" height="272" fill="none" stroke="#60a5fa" stroke-width="0.5" opacity="0.3"/>
+  <rect x="0" y="14" width="200" height="36" fill="rgba(0,0,0,0.25)"/>
+  <text x="100" y="37" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#93c5fd" font-weight="bold" letter-spacing="1">BASILE M. NGASSAKI</text>
+  <line x1="20" y1="96" x2="180" y2="96" stroke="#60a5fa" stroke-width="1.2" opacity="0.6"/>
+  <text x="100" y="92" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="#dbeafe" letter-spacing="0.5">Cultural</text>
+    <text x="100" y="122" text-anchor="middle" font-family="Georgia,serif" font-size="17" font-weight="bold" fill="#dbeafe" letter-spacing="0.5">Identity in</text>
+    <text x="100" y="152" text-anchor="middle" font-family="Georgia,serif" font-size="17" font-weight="bold" fill="#dbeafe" letter-spacing="0.5">Morrison and</text>
+    <text x="100" y="182" text-anchor="middle" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="#dbeafe" letter-spacing="0.5">Achebe</text>
+    
+  <line x1="20" y1="215" x2="180" y2="215" stroke="#60a5fa" stroke-width="0.8" opacity="0.4"/>
+  <rect x="0" y="258" width="200" height="42" fill="rgba(0,0,0,0.4)"/>
+  <text x="100" y="275" text-anchor="middle" font-family="Georgia,serif" font-size="9" fill="#60a5fa" opacity="0.8" letter-spacing="2">IJLLT VOL.6 N.11</text>
+  <text x="100" y="290" text-anchor="middle" font-family="Georgia,serif" font-size="9" fill="white" opacity="0.5">2023</text>
+  <text x="100" y="252" text-anchor="middle" font-family="Georgia,serif" font-size="7" fill="white" opacity="0.2" letter-spacing="3">LIREX · EDITION NUMERIQUE</text>
+</svg>

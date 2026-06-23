@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c8c4b8"/>
+      <stop offset="60%" stop-color="#d4d0c4"/>
+      <stop offset="100%" stop-color="#b8c0b8"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8aa090"/>
+      <stop offset="100%" stop-color="#6a8070"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky -->
+  <rect width="400" height="600" fill="url(#sky)"/>
+  <!-- Horizon water -->
+  <rect x="0" y="340" width="400" height="260" fill="url(#water)" opacity="0.6"/>
+  <!-- Mist / fog layers -->
+  <ellipse cx="200" cy="340" rx="350" ry="30" fill="#c8c4b8" opacity="0.5"/>
+  <!-- Boat hull -->
+  <path d="M100,390 Q200,420 300,390 L310,405 Q200,440 90,405 Z" fill="#2a2820"/>
+  <!-- Mast -->
+  <line x1="210" y1="250" x2="210" y2="405" stroke="#2a2820" stroke-width="4"/>
+  <!-- Boom -->
+  <line x1="130" y1="380" x2="210" y2="330" stroke="#2a2820" stroke-width="2.5"/>
+  <!-- Sail - large, worn canvas -->
+  <path d="M210,255 Q170,290 130,380 L210,330 Z" fill="#9a9080" opacity="0.85"/>
+  <path d="M210,255 Q240,275 255,340 L210,330 Z" fill="#b8a890" opacity="0.7"/>
+  <!-- Rope lines -->
+  <line x1="210" y1="255" x2="130" y2="380" stroke="#5a5040" stroke-width="1.5"/>
+  <line x1="210" y1="255" x2="290" y2="370" stroke="#5a5040" stroke-width="1.5"/>
+  <!-- Two people silhouettes in boat -->
+  <ellipse cx="185" cy="392" rx="12" ry="14" fill="#1a1810"/>
+  <rect x="177" y="398" width="16" height="18" rx="4" fill="#1a1810"/>
+  <ellipse cx="220" cy="390" rx="11" ry="13" fill="#1a1810"/>
+  <rect x="212" y="395" width="16" height="20" rx="4" fill="#1a1810"/>
+  <!-- Water reflection of boat -->
+  <path d="M100,415 Q200,445 300,415 L310,430 Q200,458 90,430 Z" fill="#2a2820" opacity="0.35" transform="scale(1,-1) translate(0,-870)"/>
+  <path d="M130,440 Q200,455 275,445" stroke="#2a2820" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <path d="M150,455 Q200,465 260,458" stroke="#2a2820" stroke-width="1" fill="none" opacity="0.25"/>
+  <!-- Points badge -->
+  <rect x="340" y="0" width="60" height="42" fill="black"/>
+  <text x="370" y="16" font-family="Arial, sans-serif" font-size="9" font-weight="bold"
+        fill="white" text-anchor="middle">POINTS</text>
+  <!-- Author name top -->
+  <text x="200" y="80" font-family="Georgia, serif" font-size="28" font-weight="bold"
+        fill="white" text-anchor="middle">Sony</text>
+  <text x="200" y="116" font-family="Georgia, serif" font-size="28" font-weight="bold"
+        fill="white" text-anchor="middle">Labou Tansi</text>
+  <!-- Title in red -->
+  <text x="200" y="175" font-family="Georgia, serif" font-size="34" font-weight="bold"
+        fill="#c02020" text-anchor="middle">La vie</text>
+  <text x="200" y="218" font-family="Georgia, serif" font-size="34" font-weight="bold"
+        fill="#c02020" text-anchor="middle">et demie</text>
+  <!-- Bottom publisher -->
+  <text x="200" y="570" font-family="Arial, sans-serif" font-size="14"
+        fill="#3a3830" text-anchor="middle">Editions du Seuil / Points</text>
+</svg>

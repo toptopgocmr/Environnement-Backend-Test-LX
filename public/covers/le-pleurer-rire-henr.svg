@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <linearGradient id="bg_pr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1208"/>
+      <stop offset="100%" stop-color="#0d0d0d"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="600" fill="url(#bg_pr)"/>
+  <!-- Masque africain stylisé -->
+  <!-- Forme du masque -->
+  <ellipse cx="200" cy="300" rx="90" ry="130" fill="#5a3810"/>
+  <!-- Front piece lighter -->
+  <ellipse cx="200" cy="305" rx="70" ry="110" fill="#7a5020"/>
+  <!-- Yeux du masque -->
+  <ellipse cx="175" cy="265" rx="18" ry="22" fill="#2a1808"/>
+  <ellipse cx="225" cy="265" rx="18" ry="22" fill="#2a1808"/>
+  <!-- Decorative lines on forehead -->
+  <line x1="165" y1="230" x2="235" y2="230" stroke="#3a2010" stroke-width="3"/>
+  <line x1="170" y1="240" x2="230" y2="240" stroke="#3a2010" stroke-width="2"/>
+  <!-- Nose bridge -->
+  <path d="M195,285 Q200,310 195,335 Q200,340 205,335 Q200,310 205,285" fill="#3a2010"/>
+  <!-- Mouth stylized -->
+  <path d="M175,350 Q200,365 225,350" fill="none" stroke="#2a1808" stroke-width="6"/>
+  <!-- Chin marking -->
+  <ellipse cx="200" cy="380" rx="30" ry="15" fill="#5a3810"/>
+  <!-- Coiffe / hair on top -->
+  <ellipse cx="200" cy="175" rx="85" ry="35" fill="#2a1808"/>
+  <!-- Dark organic hair material -->
+  <path d="M115,175 Q120,140 145,145 Q155,130 175,140 Q185,125 200,130 Q215,125 225,140 Q245,130 255,145 Q280,140 285,175 Q265,165 240,168 Q220,155 200,160 Q180,155 160,168 Z" fill="#1a0d05"/>
+  <!-- Title -->
+  <text x="200" y="488" font-family="Georgia, serif" font-size="30" font-weight="bold"
+        fill="#d4820a" text-anchor="middle">Le Pleurer-Rire</text>
+  <!-- Author -->
+  <text x="200" y="60" font-family="Georgia, serif" font-size="22"
+        fill="#d4820a" text-anchor="middle">HENRI LOPES</text>
+  <!-- Thin line separator -->
+  <line x1="80" y1="75" x2="320" y2="75" stroke="#d4820a" stroke-width="1"/>
+  <!-- Publisher -->
+  <text x="200" y="535" font-family="Arial, sans-serif" font-size="16" font-weight="bold"
+        fill="#d4820a" text-anchor="middle">Présence Africaine</text>
+  <line x1="80" y1="465" x2="320" y2="465" stroke="#d4820a" stroke-width="1"/>
+</svg>
