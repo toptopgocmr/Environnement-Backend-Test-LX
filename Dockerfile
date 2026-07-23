@@ -55,6 +55,11 @@ WORKDIR /var/www/html
 COPY . .
 COPY --from=vendor /app/vendor ./vendor
 
+# Garantir l'existence des dossiers storage (git ne versionne pas les dossiers vides)
+RUN mkdir -p storage/framework/sessions storage/framework/views \
+             storage/framework/cache/data storage/framework/testing \
+             storage/logs
+
 # Permissions storage
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
