@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
           --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) \
           gd exif pdo pdo_mysql zip opcache \
-          mbstring bcmath ctype tokenizer xml fileinfo \
+          mbstring bcmath xml fileinfo \
     && rm -rf /var/lib/apt/lists/*
 
 # OPcache production
