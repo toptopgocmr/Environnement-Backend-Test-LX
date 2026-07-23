@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\{User, Book, Order, Category, Review, Royalty, ReadingProgress};
 use App\Services\PaymentService;
 use Illuminate\Http\{Request, JsonResponse};
-use Illuminate\Support\Facades\{Auth, Hash, Storage};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Storage};
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -20,8 +20,19 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user  = User::create(array_merge($data, ['role' => 'reader']));
-        $token = JWTAuth::fromUser($user);
+        try {
+            [$user, $token] = DB::transaction(function () use ($data) {
+                $user  = User::create(array_merge($data, ['role' => 'reader']));
+                $token = JWTAuth::fromUser($user);
+                return [$user, $token];
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json([
+                'success' => false,
+                'message' => "Une erreur technique est survenue. Le compte n'a pas été créé, veuillez réessayer.",
+            ], 500);
+        }
 
         return response()->json([
             'success' => true,
