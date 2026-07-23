@@ -109,6 +109,9 @@
             </div>
         </div>
 
+        <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold mb-3" style="background:#fef3c7;color:#92400e;">
+            ESPACE AUTEUR
+        </span>
         <h2 class="text-xl font-bold text-slate-800 mb-1">Rejoindre LireX en tant qu'auteur</h2>
         <p class="text-slate-500 text-sm mb-6">Publiez vos ouvrages et touchez vos lecteurs.</p>
 
@@ -161,6 +164,10 @@
         <div class="mt-5 pt-5 border-t border-slate-100 text-center text-sm text-slate-500">
             Déjà inscrit ?
             <a href="{{ route('login') }}" class="text-amber-600 font-semibold hover:text-amber-700 ml-1">Se connecter</a>
+        </div>
+        <div class="mt-2 text-center text-sm text-slate-500">
+            Vous êtes lecteur ?
+            <a href="{{ rtrim(config('app.frontend_url'), '/') }}/register" class="text-blue-600 font-semibold hover:text-blue-700 ml-1">Rejoindre l'Espace Lecture →</a>
         </div>
 
         <p class="text-center text-[11px] text-slate-400 mt-5">

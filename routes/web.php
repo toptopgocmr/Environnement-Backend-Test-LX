@@ -167,9 +167,8 @@ Route::prefix('author')->name('author.')->middleware(['auth','role:author,admin'
     Route::prefix('plans')->name('plans.')->group(function () {
         Route::get('/',          [Author\PlanController::class, 'index'])->name('index');
         Route::post('/subscribe',[Author\PlanController::class, 'subscribe'])->name('subscribe');
-        Route::post('/payment',  [Author\PlanController::class, 'payment'])->name('payment');
-        Route::post('/pay',      [Author\PlanController::class, 'payment'])->name('pay'); // alias pour compatibilité vue
-        Route::post('/verify',   [Author\PlanController::class, 'verify'])->name('verify');
+        Route::post('/pay',      [Author\PlanController::class, 'initiatePayment'])->name('pay');
+        Route::get('/pay/{authorPlan}/status', [Author\PlanController::class, 'checkStatus'])->name('pay.status');
     });
 
     // Profil

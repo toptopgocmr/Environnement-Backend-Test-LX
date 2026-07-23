@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LireX – Inscription Auteur</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon-192.png" />
+    <meta name="theme-color" content="#1a1a2e" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
@@ -105,6 +109,9 @@
             </div>
         </div>
 
+        <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold mb-3" style="background:#fef3c7;color:#92400e;">
+            ESPACE AUTEUR
+        </span>
         <h2 class="text-xl font-bold text-slate-800 mb-1">Rejoindre LireX en tant qu'auteur</h2>
         <p class="text-slate-500 text-sm mb-6">Publiez vos ouvrages et touchez vos lecteurs.</p>
 
@@ -157,6 +164,10 @@
         <div class="mt-5 pt-5 border-t border-slate-100 text-center text-sm text-slate-500">
             Déjà inscrit ?
             <a href="<?php echo e(route('login')); ?>" class="text-amber-600 font-semibold hover:text-amber-700 ml-1">Se connecter</a>
+        </div>
+        <div class="mt-2 text-center text-sm text-slate-500">
+            Vous êtes lecteur ?
+            <a href="<?php echo e(rtrim(config('app.frontend_url'), '/')); ?>/register" class="text-blue-600 font-semibold hover:text-blue-700 ml-1">Rejoindre l'Espace Lecture →</a>
         </div>
 
         <p class="text-center text-[11px] text-slate-400 mt-5">

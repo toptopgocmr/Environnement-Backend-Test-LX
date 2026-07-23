@@ -66,14 +66,18 @@ class OrderController extends Controller
         return response()->json(['success' => true, 'data' => $orders]);
     }
 
+    /**
+     * Téléchargement désactivé volontairement : un livre acheté se lit uniquement
+     * dans l'espace lecteur (streaming via readLink()/streamBook()), il n'est
+     * jamais téléchargeable sous forme de fichier brut.
+     */
     public function downloadLink(Order $order): JsonResponse
     {
         if ($order->user_id !== Auth::id()) abort(403);
-        if ($order->download_count >= $order->max_downloads) {
-            return response()->json(['success' => false, 'message' => 'Limite de téléchargements atteinte.'], 403);
-        }
-        $order->increment('download_count');
-        $url = route('api.books.download', $order->book_id) . '?token=' . $order->download_token;
-        return response()->json(['success' => true, 'data' => ['download_url' => $url]]);
+
+        return response()->json([
+            'success' => false,
+            'message' => "Le téléchargement n'est pas autorisé. Retrouvez ce livre dans votre bibliothèque pour le lire en ligne.",
+        ], 403);
     }
 }

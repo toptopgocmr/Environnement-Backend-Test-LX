@@ -78,22 +78,33 @@ class BookController extends Controller
         return response()->json(['success' => true, 'data' => $reviews]);
     }
 
-    public function download(Book $book): mixed
+    /**
+     * Téléchargement du fichier brut désactivé volontairement : un livre numérique
+     * acheté (ou gratuit) se lit exclusivement via le lecteur intégré (streaming
+     * par token temporaire, cf. readLink()/streamBook()) et reste stocké dans
+     * l'espace lecteur de l'utilisateur — il n'est jamais téléchargeable.
+     */
+    public function download(Book $book): JsonResponse
     {
-        $user = Auth::user();
-        if (!$book->is_free && !$user->hasPurchased($book->id) && !$user->hasActiveSubscription()) {
-            return response()->json(['success' => false, 'message' => 'Achat requis.'], 403);
-        }
-        $book->increment('downloads');
-        return Storage::disk('local')->download($book->file_path, \Str::slug($book->title) . '.pdf');
+        return response()->json([
+            'success' => false,
+            'message' => "Le téléchargement n'est pas autorisé. Lisez ce livre depuis votre espace lecteur.",
+        ], 403);
     }
 
+    /** Nombre de pages consultables gratuitement avant paywall pour un livre payant non acquis. */
+    public const FREE_PREVIEW_PAGES = 5;
+
     /** Génère un token de lecture temporaire (1h) et renvoie l'URL de streaming.
-     *  - Livre gratuit  : accessible sans authentification
-     *  - Livre payant   : requiert achat ou abonnement actif
+     *  - Livre gratuit                       : accessible sans authentification, lecture complète
+     *  - Livre payant, acheté/abonnement actif : lecture complète
+     *  - Livre payant, non acquis              : aperçu limité à FREE_PREVIEW_PAGES pages, puis paywall
      */
     public function readLink(Book $book): JsonResponse
     {
+        $isPreview    = false;
+        $previewPages = null;
+
         // Vérification des droits
         if (!$book->is_free) {
             $user = Auth::user();
@@ -101,7 +112,8 @@ class BookController extends Controller
                 return response()->json(['success' => false, 'message' => 'Connexion requise.'], 401);
             }
             if (!$user->hasPurchased($book->id) && !$user->hasActiveSubscription()) {
-                return response()->json(['success' => false, 'message' => 'Achat requis.'], 403);
+                $isPreview    = true;
+                $previewPages = min(self::FREE_PREVIEW_PAGES, $book->pages ?: self::FREE_PREVIEW_PAGES);
             }
         }
 
@@ -114,9 +126,11 @@ class BookController extends Controller
 
         $url = url("/api/v1/books/{$book->id}/stream/{$token}");
         return response()->json(['success' => true, 'data' => [
-            'url'    => $url,
-            'format' => $book->format ?: 'pdf',
-            'pages'  => $book->pages,
+            'url'            => $url,
+            'format'         => $book->format ?: 'pdf',
+            'pages'          => $book->pages,
+            'is_preview'     => $isPreview,
+            'preview_pages'  => $previewPages,
         ]]);
     }
 

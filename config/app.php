@@ -12,6 +12,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // URL de l'application web lecteur (Vue SPA "frontend-web"), utilisée pour
+    // faire le lien "Espace Lecture" depuis les pages de connexion admin/auteur.
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
+
     'timezone' => 'Africa/Brazzaville',
 
     'locale' => 'fr',

@@ -549,6 +549,8 @@ async function triggerPushPayment() {
     document.getElementById('f-method').value = method;
     document.getElementById('f-billing').value = billing;
 
+    document.getElementById('status-phone-display').textContent = 'Numéro : +242 ' + phone;
+
     goStep(3);
     startPolling(authorplanId);
 
@@ -591,16 +593,28 @@ function stopPolling() {
 }
 
 function showSuccess() {
-  document.getElementById('step-3-pending').classList.add('hidden');
-  document.getElementById('step-3-success').classList.remove('hidden');
-  document.getElementById('step-3-fail').classList.add('hidden');
+  document.getElementById('status-pending').classList.add('hidden');
+  document.getElementById('status-success').classList.remove('hidden');
+  document.getElementById('status-failed').classList.add('hidden');
+  document.getElementById('success-plan-name').textContent = md.planName || '';
+
+  let n = 3;
+  const countEl = document.getElementById('redirect-count');
+  const t = setInterval(() => {
+    n--;
+    if (countEl) countEl.textContent = n;
+    if (n <= 0) {
+      clearInterval(t);
+      window.location.href = '{{ route('author.plans.index') }}';
+    }
+  }, 1000);
 }
 
 function showFail(reason) {
   document.getElementById('fail-reason').textContent = reason || 'Le paiement a été refusé ou a expiré.';
-  document.getElementById('step-3-pending').classList.add('hidden');
-  document.getElementById('step-3-success').classList.add('hidden');
-  document.getElementById('step-3-fail').classList.remove('hidden');
+  document.getElementById('status-pending').classList.add('hidden');
+  document.getElementById('status-success').classList.add('hidden');
+  document.getElementById('status-failed').classList.remove('hidden');
 }
 
 /* ── Event listeners ─────────────────────────────────────────────────────── */

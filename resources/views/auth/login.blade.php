@@ -109,8 +109,24 @@
             </div>
         </div>
 
-        <h2 class="text-xl font-bold text-slate-800 mb-1">Connexion</h2>
-        <p class="text-slate-500 text-sm mb-6">Accédez à votre espace</p>
+        {{-- Sélecteur d'espace --}}
+        <div class="grid grid-cols-3 gap-1.5 p-1 mb-6 rounded-xl" style="background:#f1f5f9;">
+            <button type="button" id="space-admin" onclick="setSpace('admin')"
+                class="py-2 rounded-lg text-xs font-semibold transition" style="background:#fff;color:#1e293b;box-shadow:0 1px 3px rgba(0,0,0,.08);">
+                Espace Admin
+            </button>
+            <button type="button" id="space-author" onclick="setSpace('author')"
+                class="py-2 rounded-lg text-xs font-semibold transition" style="color:#64748b;">
+                Espace Auteur
+            </button>
+            <button type="button" onclick="window.location.href='{{ rtrim(config('app.frontend_url'), '/') }}/login'"
+                class="py-2 rounded-lg text-xs font-semibold transition" style="color:#64748b;">
+                Espace Lecture
+            </button>
+        </div>
+
+        <h2 class="text-xl font-bold text-slate-800 mb-1" id="space-title">Connexion — Espace Admin</h2>
+        <p class="text-slate-500 text-sm mb-6" id="space-subtitle">Accédez à votre tableau de bord administrateur</p>
 
         @if(session('status'))
             <div class="bg-green-50 border border-green-200 text-green-700 rounded-xl p-3 mb-4 text-sm">{{ session('status') }}</div>
@@ -140,7 +156,7 @@
             <button type="submit" class="btn">Se connecter →</button>
         </form>
 
-        <div class="mt-5 pt-5 border-t border-slate-100 text-center text-sm text-slate-500">
+        <div class="mt-5 pt-5 border-t border-slate-100 text-center text-sm text-slate-500" id="register-hint">
             Pas encore de compte auteur ?
             <a href="{{ route('register') }}" class="text-amber-600 font-semibold hover:text-amber-700 ml-1">S'inscrire</a>
         </div>
@@ -149,6 +165,21 @@
             © {{ date('Y') }} LireX — Développé avec <span style="color:#ef4444;">❤</span> par <strong class="text-slate-500">Basile Marius NGASSAKI ZONI</strong>
         </p>
     </div>
+
+    <script>
+        const SPACES = {
+            admin:  { title: 'Connexion — Espace Admin',  subtitle: 'Accédez à votre tableau de bord administrateur', register: false },
+            author: { title: 'Connexion — Espace Auteur', subtitle: 'Accédez à votre espace de publication',          register: true  },
+        };
+        function setSpace(space) {
+            document.getElementById('space-admin').style.cssText  = space === 'admin'  ? 'background:#fff;color:#1e293b;box-shadow:0 1px 3px rgba(0,0,0,.08);' : 'color:#64748b;';
+            document.getElementById('space-author').style.cssText = space === 'author' ? 'background:#fff;color:#1e293b;box-shadow:0 1px 3px rgba(0,0,0,.08);' : 'color:#64748b;';
+            document.getElementById('space-title').textContent    = SPACES[space].title;
+            document.getElementById('space-subtitle').textContent = SPACES[space].subtitle;
+            document.getElementById('register-hint').style.display = SPACES[space].register ? '' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', () => setSpace('admin'));
+    </script>
 
 </body>
 </html>

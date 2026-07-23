@@ -35,7 +35,8 @@ RUN { \
     } > /usr/local/etc/php/conf.d/opcache.ini
 
 # Apache : activer mod_rewrite + pointer sur /public
-RUN a2enmod rewrite
+RUN a2enmod rewrite \
+    && a2dismod mpm_event mpm_worker 2>/dev/null; a2enmod mpm_prefork
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' \
         /etc/apache2/sites-available/000-default.conf \
     && sed -i 's|<Directory /var/www/html>|<Directory /var/www/html/public>|g' \
