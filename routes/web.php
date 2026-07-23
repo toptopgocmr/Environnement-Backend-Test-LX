@@ -5,6 +5,9 @@ use App\Http\Controllers\{AuthController as WebAuth};
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Author;
 
+// ─── Healthcheck (Railway) ────────────────────────────────────────────────────
+Route::get('/', fn () => response()->json(['status' => 'ok']));
+
 // ─── Locale switcher ─────────────────────────────────────────────────────────
 Route::get('/locale/{code}', function (string $code) {
     $supported = ['fr','en','es','zh','pt','ar','ln','sw','de','ha','kt','ru'];
