@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Author;
 
 use App\Http\Controllers\Controller;
 use App\Models\{PublicationPlan, AuthorPlan};
-use App\Services\{MtnMomoService, AirtelService};
+use App\Services\PeexService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +27,7 @@ class PlanController extends Controller
         $data = $request->validate([
             'plan_id'         => 'required|exists:publication_plans,id',
             'billing'         => 'required|in:monthly,annual',
-            'payment_method'  => 'required|in:mtn_momo,airtel_money,stripe',
+            'payment_method'  => 'required|in:peex,stripe',
             'transaction_ref' => 'nullable|string|max:100',
             'phone_used'      => 'nullable|string|max:30',
         ]);
@@ -84,9 +84,8 @@ class PlanController extends Controller
         ]);
 
         $methodLabel = match($data['payment_method']) {
-            'mtn_momo'    => 'MTN Mobile Money',
-            'airtel_money'=> 'Airtel Money',
-            default       => 'Carte bancaire',
+            'peex'  => 'Mobile Money (Peex)',
+            default => 'Carte bancaire',
         };
 
         return redirect()->route('author.plans.index')
@@ -103,7 +102,7 @@ class PlanController extends Controller
         $data = $request->validate([
             'plan_id'        => 'required|exists:publication_plans,id',
             'billing'        => 'required|in:monthly,annual',
-            'payment_method' => 'required|in:mtn_momo,airtel_money',
+            'payment_method' => 'required|in:peex',
             'phone'          => ['required', 'string', 'regex:/^(\+?242|0)?[0-9]{8,9}$/'],
         ]);
 
@@ -133,11 +132,8 @@ class PlanController extends Controller
         ]);
         $authorPlan->load('plan');
 
-        // Appeler l'API de paiement push
-        $result = match($data['payment_method']) {
-            'mtn_momo'    => app(MtnMomoService::class)->initiatePlan($authorPlan, $data['phone']),
-            'airtel_money'=> app(AirtelService::class)->initiatePlan($authorPlan, $data['phone']),
-        };
+        // Appeler l'API de paiement push (Peex)
+        $result = app(PeexService::class)->initiatePlan($authorPlan, $data['phone'], Auth::user()->name);
 
         if (!$result['success']) {
             $authorPlan->update(['status' => 'cancelled']);
@@ -172,9 +168,8 @@ class PlanController extends Controller
         }
 
         $result = match($authorPlan->payment_method) {
-            'mtn_momo'    => app(MtnMomoService::class)->checkPlanStatus($authorPlan),
-            'airtel_money'=> app(AirtelService::class)->checkPlanStatus($authorPlan),
-            default       => ['status' => 'PENDING'],
+            'peex'  => app(PeexService::class)->checkPlanStatus($authorPlan),
+            default => ['status' => 'PENDING'],
         };
 
         $message = match($result['status']) {

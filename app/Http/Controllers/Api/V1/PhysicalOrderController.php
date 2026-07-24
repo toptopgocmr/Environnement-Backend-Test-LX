@@ -6,45 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\{
     ChatConversation, ChatMessage, PublicationPlan, AuthorPlan,
     AccountRequest, Book, Order, ShippingAddress, ReadingSession, Citation
-    public function tracking(Order $order): JsonResponse
-    {
-        // Vérifier que la commande appartient à l'utilisateur connecté
-        if ($order->user_id !== Auth::id()) {
-            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
-        }
-
-        $order->load(['book:id,title,cover_image,cover_url', 'trackingEvents' => fn($q) => $q->orderBy('occurred_at', 'desc')]);
-
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'reference'               => $order->reference,
-                'shipping_status'         => $order->shipping_status,
-                'status_label'            => $order->shippingStatusLabel(),
-                'status_icon'             => $order->shippingStatusIcon(),
-                'tracking_number'         => $order->tracking_number,
-                'carrier'                 => $order->carrier,
-                'full_name'               => $order->full_name,
-                'shipping_address'        => $order->shipping_address,
-                'shipping_city'           => $order->shipping_city,
-                'shipping_country'        => $order->shipping_country,
-                'estimated_delivery_date' => $order->estimated_delivery_date?->format('Y-m-d'),
-                'shipped_at'              => $order->shipped_at?->toISOString(),
-                'delivered_at'            => $order->delivered_at?->toISOString(),
-                'book'                    => $order->book,
-                'events'                  => $order->trackingEvents->map(fn($e) => [
-                    'id'          => $e->id,
-                    'status'      => $e->status,
-                    'status_label'=> \App\Models\OrderTrackingEvent::statusLabel($e->status),
-                    'status_icon' => \App\Models\OrderTrackingEvent::statusIcon($e->status),
-                    'location'    => $e->location,
-                    'description' => $e->description,
-                    'occurred_at' => $e->occurred_at->toISOString(),
-                ]),
-            ],
-        ]);
-    }
-
 };
 use App\Services\{ChatService, AiReviewService, PhysicalStockService};
 use Illuminate\Http\{Request, JsonResponse};
@@ -59,8 +20,8 @@ class PhysicalOrderController extends Controller
     {
         $data = $request->validate([
             'book_id'            => 'required|exists:books,id',
-            'payment_method'     => 'required|in:mtn_momo,airtel_money,stripe',
-            'phone'              => 'required_if:payment_method,mtn_momo,airtel_money|nullable|string',
+            'payment_method'     => 'required|in:peex,stripe',
+            'phone'              => 'required_if:payment_method,peex|nullable|string',
             'shipping_address_id'=> 'nullable|exists:shipping_addresses,id',
             // ou nouvelle adresse
             'full_name'         => 'required_without:shipping_address_id|nullable|string',
@@ -151,5 +112,44 @@ class PhysicalOrderController extends Controller
 
         $address = ShippingAddress::create(array_merge($data, ['user_id' => Auth::id()]));
         return response()->json(['success' => true, 'data' => $address], 201);
+    }
+
+    public function tracking(Order $order): JsonResponse
+    {
+        // Vérifier que la commande appartient à l'utilisateur connecté
+        if ($order->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+        }
+
+        $order->load(['book:id,title,cover_image,cover_url', 'trackingEvents' => fn($q) => $q->orderBy('occurred_at', 'desc')]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'reference'               => $order->reference,
+                'shipping_status'         => $order->shipping_status,
+                'status_label'            => $order->shippingStatusLabel(),
+                'status_icon'             => $order->shippingStatusIcon(),
+                'tracking_number'         => $order->tracking_number,
+                'carrier'                 => $order->carrier,
+                'full_name'               => $order->full_name,
+                'shipping_address'        => $order->shipping_address,
+                'shipping_city'           => $order->shipping_city,
+                'shipping_country'        => $order->shipping_country,
+                'estimated_delivery_date' => $order->estimated_delivery_date?->format('Y-m-d'),
+                'shipped_at'              => $order->shipped_at?->toISOString(),
+                'delivered_at'            => $order->delivered_at?->toISOString(),
+                'book'                    => $order->book,
+                'events'                  => $order->trackingEvents->map(fn($e) => [
+                    'id'          => $e->id,
+                    'status'      => $e->status,
+                    'status_label'=> \App\Models\OrderTrackingEvent::statusLabel($e->status),
+                    'status_icon' => \App\Models\OrderTrackingEvent::statusIcon($e->status),
+                    'location'    => $e->location,
+                    'description' => $e->description,
+                    'occurred_at' => $e->occurred_at->toISOString(),
+                ]),
+            ],
+        ]);
     }
 }

@@ -10,8 +10,7 @@ use Illuminate\Support\Str;
 class PaymentService
 {
     public function __construct(
-        protected MtnMomoService $mtn,
-        protected AirtelService  $airtel,
+        protected PeexService $peex,
     ) {}
 
     public function initiate(array $data, Book $book, User $user): array
@@ -27,18 +26,16 @@ class PaymentService
         ]);
 
         return match($data['payment_method']) {
-            'mtn_momo'    => $this->mtn->initiate($order, $data['phone']),
-            'airtel_money'=> $this->airtel->initiate($order, $data['phone']),
-            default       => ['success' => false, 'message' => 'Méthode de paiement inconnue.'],
+            'peex'  => $this->peex->initiate($order, $data['phone'], $user->name, $data['country'] ?? 'CG'),
+            default => ['success' => false, 'message' => 'Méthode de paiement inconnue.'],
         };
     }
 
     public function handleCallback(string $method, array $payload): array
     {
         $handler = match($method) {
-            'mtn'    => fn() => $this->mtn->handleCallback($payload),
-            'airtel' => fn() => $this->airtel->handleCallback($payload),
-            default  => null,
+            'peex'  => fn() => $this->peex->handleCallback($payload),
+            default => null,
         };
 
         if (!$handler) return ['success' => false];

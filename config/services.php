@@ -19,23 +19,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    // ─── MTN Mobile Money ──────────────────────────────────────────────────────
-    'mtn_momo' => [
-        'base_url'         => env('MTN_MOMO_BASE_URL', 'https://sandbox.momodeveloper.mtn.com'),
-        'subscription_key' => env('MTN_MOMO_SUBSCRIPTION_KEY'),
-        'api_user'         => env('MTN_MOMO_API_USER'),
-        'api_key'          => env('MTN_MOMO_API_KEY'),
-        'environment'      => env('MTN_MOMO_ENV', 'sandbox'),
-        'currency'         => env('MTN_MOMO_CURRENCY', 'EUR'), // EUR en sandbox, XAF en prod
-    ],
-
-    // ─── Airtel Money ─────────────────────────────────────────────────────────
-    'airtel' => [
-        'base_url'      => env('AIRTEL_BASE_URL', 'https://openapi.airtel.africa'),
-        'client_id'     => env('AIRTEL_CLIENT_ID'),
-        'client_secret' => env('AIRTEL_CLIENT_SECRET'),
-        'country'       => 'CG',
-        'currency'      => 'XAF',
+    // ─── Peex (agrégateur mobile money — collecte) ────────────────────────────
+    'peex' => [
+        'base_url'          => env('PEEX_BASE_URL', 'https://sandbox.peexit.com/api/v1'),
+        'secret_key'        => env('PEEX_SECRET_KEY'),
+        'callback_username' => env('PEEX_CALLBACK_USERNAME', 'peex'),
+        'callback_password' => env('PEEX_CALLBACK_PASSWORD'),
     ],
 
     // ─── Stripe ───────────────────────────────────────────────────────────────

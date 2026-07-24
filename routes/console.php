@@ -4,8 +4,7 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 use App\Models\Order;
-use App\Services\MtnMomoService;
-use App\Services\AirtelService;
+use App\Services\PeexService;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -20,17 +19,13 @@ Schedule::call(function () {
 
     foreach ($pendingOrders as $order) {
         try {
-            if ($order->payment_method === 'mtn_momo') {
-                $service = app(MtnMomoService::class);
+            if ($order->payment_method === 'peex') {
+                $service = app(PeexService::class);
                 $result  = $service->checkStatus($order->transaction_id);
-                if (($result['status'] ?? '') === 'SUCCESSFUL') {
+                if (($result['status'] ?? '') === 'paid') {
                     \DB::transaction(fn() => \App\Services\PaymentService::createRoyalty($order));
-                }
-            } elseif ($order->payment_method === 'airtel_money') {
-                $service = app(AirtelService::class);
-                $result  = $service->checkStatus($order->transaction_id);
-                if (($result['success'] ?? false)) {
-                    \DB::transaction(fn() => \App\Services\PaymentService::createRoyalty($order));
+                } elseif (in_array($result['status'] ?? '', ['failed', 'canceled', 'rejected'], true)) {
+                    $order->update(['payment_status' => 'failed']);
                 }
             }
         } catch (\Exception $e) {

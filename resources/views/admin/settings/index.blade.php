@@ -69,10 +69,10 @@
         <div class="rounded-2xl p-6 space-y-5" style="background:#162035;border:1px solid #1E3A6A">
             <h2 class="text-white font-semibold text-lg flex items-center gap-2">📱 Moyens de paiement</h2>
             <div class="space-y-3">
-                @foreach([['mtn_momo', '🟡 MTN Mobile Money'], ['airtel_money', '🔴 Airtel Money'], ['stripe', '💳 Stripe (carte)'], ['free', '🆓 Livres gratuits']] as [$key, $label])
+                @foreach([['peex', '📱 Mobile Money (Peex)'], ['stripe', '💳 Stripe (carte)'], ['free', '🆓 Livres gratuits']] as [$key, $label])
                     <label class="flex items-center gap-3 p-4 rounded-xl cursor-pointer" style="background:#0F2044;border:1px solid #1E3A6A">
                         <input type="checkbox" name="payment_methods[]" value="{{ $key }}"
-                            {{ in_array($key, $settings['payment_methods'] ?? ['mtn_momo','airtel_money','free']) ? 'checked' : '' }}
+                            {{ in_array($key, $settings['payment_methods'] ?? ['peex','free']) ? 'checked' : '' }}
                             class="w-4 h-4 rounded">
                         <span class="text-white text-sm">{{ $label }}</span>
                     </label>

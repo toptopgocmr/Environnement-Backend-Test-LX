@@ -19,8 +19,8 @@ class ReadingSessionController extends Controller
     {
         $request->validate([
             'duration_hours' => 'required|integer|in:6,24,72',
-            'payment_method' => 'required|in:mtn_momo,airtel_money,stripe',
-            'phone'          => 'required_if:payment_method,mtn_momo,airtel_money|nullable|string',
+            'payment_method' => 'required|in:peex,stripe',
+            'phone'          => 'required_if:payment_method,peex|nullable|string',
         ]);
 
         if (!$book->allow_rental) {

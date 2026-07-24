@@ -36,8 +36,9 @@
       <label class="text-xs font-semibold text-slate-500 mb-1 block">Méthode</label>
       <select name="method" class="border border-slate-200 rounded-xl px-3 py-2 text-sm">
         <option value="">Toutes</option>
-        <option value="mtn_momo">MTN MoMo</option>
-        <option value="airtel_money">Airtel Money</option>
+        <option value="peex">Peex (Mobile Money)</option>
+        <option value="mtn_momo">MTN MoMo (historique)</option>
+        <option value="airtel_money">Airtel Money (historique)</option>
         <option value="stripe">Stripe</option>
         <option value="free">Gratuit</option>
       </select>
@@ -71,7 +72,7 @@
         <td class="px-5 py-3 text-slate-600">{{ $order->user->name }}</td>
         <td class="px-5 py-3 font-semibold text-slate-800">{{ number_format($order->amount,0,',',' ') }} {{ $order->currency }}</td>
         <td class="px-5 py-3">
-          @php $m=['mtn_momo'=>['MTN','bg-yellow-100 text-yellow-800'],'airtel_money'=>['Airtel','bg-red-100 text-red-800'],'stripe'=>['Carte','bg-blue-100 text-blue-800'],'free'=>['Gratuit','bg-green-100 text-green-800']]; @endphp
+          @php $m=['peex'=>['Peex','bg-orange-100 text-orange-800'],'mtn_momo'=>['MTN','bg-yellow-100 text-yellow-800'],'airtel_money'=>['Airtel','bg-red-100 text-red-800'],'stripe'=>['Carte','bg-blue-100 text-blue-800'],'free'=>['Gratuit','bg-green-100 text-green-800']]; @endphp
           @if(isset($m[$order->payment_method]))
           <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $m[$order->payment_method][1] }}">{{ $m[$order->payment_method][0] }}</span>
           @endif

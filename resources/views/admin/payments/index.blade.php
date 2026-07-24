@@ -32,8 +32,8 @@
   <div class="divide-y divide-slate-100">
     @foreach($pending as $ap)
     @php
-      $methodIcon  = match($ap->payment_method) { 'mtn_momo'=>'🟡', 'airtel_money'=>'🔴', default=>'💳' };
-      $methodLabel = match($ap->payment_method) { 'mtn_momo'=>'MTN MoMo', 'airtel_money'=>'Airtel Money', default=>'Carte' };
+      $methodIcon  = match($ap->payment_method) { 'peex'=>'📱', 'mtn_momo'=>'🟡', 'airtel_money'=>'🔴', default=>'💳' };
+      $methodLabel = match($ap->payment_method) { 'peex'=>'Peex', 'mtn_momo'=>'MTN MoMo', 'airtel_money'=>'Airtel Money', default=>'Carte' };
     @endphp
     <div class="px-6 py-5 flex items-center gap-5">
       {{-- Avatar --}}

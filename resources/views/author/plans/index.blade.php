@@ -224,25 +224,12 @@
         <div class="mb-3">
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Méthode de paiement</label>
           <div class="space-y-1.5">
-            <label class="pay-meth flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer" data-m="mtn_momo" style="border-color:#f59e0b;background:#fffbeb;">
-              <input type="radio" name="pay_method_ui" value="mtn_momo" checked class="accent-amber-500">
-              <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#ffcc00;flex-shrink:0;">
-                <svg width="20" height="12" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 0h7l5 14L17 0h7v24h-5V8l-4 11h-5L6 8v16H0V0z" fill="#000"/>
-                  <path d="M25 0h15v4h-5v20h-5V4h-5V0z" fill="#000"/>
-                </svg>
+            <label class="pay-meth flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer" data-m="peex" style="border-color:#f59e0b;background:#fffbeb;">
+              <input type="radio" name="pay_method_ui" value="peex" checked class="accent-amber-500">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#0073bb;flex-shrink:0;">
+                <span style="color:#fff;font-weight:900;font-size:9px;font-family:Arial,sans-serif;">peex</span>
               </span>
-              <div><div class="font-semibold text-sm text-slate-800">MTN Mobile Money</div><div class="text-xs text-slate-500">Via USSD *105#</div></div>
-            </label>
-            <label class="pay-meth flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer" data-m="airtel_money" style="border-color:#e2e8f0;background:white;">
-              <input type="radio" name="pay_method_ui" value="airtel_money" class="accent-red-500">
-              <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#e40000;flex-shrink:0;">
-                <svg width="22" height="16" viewBox="0 0 44 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22 0C10 0 1 7 0 17c1-7 8-12 16-12 10 0 16 7 15 16 2-2 3-5 3-7 0-8-5-14-12-14z" fill="#fff"/>
-                  <path d="M22 28C34 28 43 21 44 11c-1 7-8 12-16 12C18 23 12 16 13 7c-2 2-3 5-3 7 0 8 5 14 12 14z" fill="#fff"/>
-                </svg>
-              </span>
-              <div><div class="font-semibold text-sm text-slate-800">Airtel Money</div><div class="text-xs text-slate-500">Via USSD *128#</div></div>
+              <div><div class="font-semibold text-sm text-slate-800">Mobile Money (Peex)</div><div class="text-xs text-slate-500">MTN, Airtel, Orange…</div></div>
             </label>
             <label class="pay-meth flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer" data-m="stripe" style="border-color:#e2e8f0;background:white;">
               <input type="radio" name="pay_method_ui" value="stripe" class="accent-blue-500">
@@ -263,9 +250,9 @@
         {{-- Mobile Money : saisie numéro --}}
         <div id="pay-momo">
           <div class="flex items-center gap-3 mb-4">
-            <span class="text-3xl" id="momo-icon">🟡</span>
+            <span class="text-3xl" id="momo-icon">📱</span>
             <div>
-              <h3 class="font-bold text-slate-800" id="momo-title">MTN Mobile Money</h3>
+              <h3 class="font-bold text-slate-800" id="momo-title">Mobile Money (Peex)</h3>
               <p class="text-slate-500 text-sm">Entrez votre numéro — vous recevrez une notification sur votre téléphone</p>
             </div>
           </div>
@@ -289,7 +276,7 @@
                 maxlength="15">
             </div>
             <p class="text-xs text-slate-400 mt-1.5">
-              <span id="momo-phone-hint">Le numéro MTN MoMo enregistré sur votre téléphone.</span>
+              <span id="momo-phone-hint">Le numéro Mobile Money enregistré sur votre téléphone.</span>
             </p>
           </div>
 
@@ -447,7 +434,7 @@ function refreshMethod() {
 /* ── Navigation entre étapes ─────────────────────────────────────────────── */
 function goStep(n) {
   if (n === 2) {
-    const method  = document.querySelector('input[name="pay_method_ui"]:checked')?.value || 'mtn_momo';
+    const method  = document.querySelector('input[name="pay_method_ui"]:checked')?.value || 'peex';
     const billing = document.querySelector('input[name="billing_ui"]:checked')?.value || 'monthly';
     const price   = billing === 'annual' ? md.pAnnual : md.pMonth;
 
@@ -465,12 +452,9 @@ function goStep(n) {
     } else {
       document.getElementById('pay-stripe').classList.add('hidden');
       document.getElementById('pay-momo').classList.remove('hidden');
-      // Adapter selon MTN / Airtel
-      document.getElementById('momo-icon').innerHTML = method === 'mtn_momo' ? `<span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#ffcc00;"><svg width="24" height="14" viewBox="0 0 40 24" fill="none"><path d="M0 0h7l5 14L17 0h7v24h-5V8l-4 11h-5L6 8v16H0V0z" fill="#000"/><path d="M25 0h15v4h-5v20h-5V4h-5V0z" fill="#000"/></svg></span>` : `<span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#e40000;"><svg width="26" height="18" viewBox="0 0 44 28" fill="none"><path d="M22 0C10 0 1 7 0 17c1-7 8-12 16-12 10 0 16 7 15 16 2-2 3-5 3-7 0-8-5-14-12-14z" fill="#fff"/><path d="M22 28C34 28 43 21 44 11c-1 7-8 12-16 12C18 23 12 16 13 7c-2 2-3 5-3 7 0 8 5 14 12 14z" fill="#fff"/></svg></span>`;
-      document.getElementById('momo-title').textContent = method === 'mtn_momo' ? 'MTN Mobile Money' : 'Airtel Money';
-      document.getElementById('momo-phone-hint').textContent = method === 'mtn_momo'
-        ? 'Le numéro MTN MoMo enregistré sur votre téléphone.'
-        : 'Le numéro Airtel Money enregistré sur votre téléphone.';
+      document.getElementById('momo-icon').innerHTML = '<span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#0073bb;color:#fff;font-weight:900;font-size:11px;font-family:Arial,sans-serif;">peex</span>';
+      document.getElementById('momo-title').textContent = 'Mobile Money (Peex)';
+      document.getElementById('momo-phone-hint').textContent = 'Le numéro Mobile Money enregistré sur votre téléphone.';
       document.getElementById('momo-amount').textContent = fmt(price, md.currency) + (price ? (billing === 'monthly' ? '/mois' : '/an') : '');
       document.getElementById('momo-error').classList.add('hidden');
       document.getElementById('inp-momo-phone').value = '';
@@ -504,7 +488,7 @@ function goStep(n) {
 /* ── Déclencher le push payment Mobile Money ─────────────────────────────── */
 async function triggerPushPayment() {
   const phone   = document.getElementById('inp-momo-phone').value.trim();
-  const method  = document.querySelector('input[name="pay_method_ui"]:checked')?.value || 'mtn_momo';
+  const method  = document.querySelector('input[name="pay_method_ui"]:checked')?.value || 'peex';
   const billing = document.querySelector('input[name="billing_ui"]:checked')?.value || 'monthly';
   const errEl   = document.getElementById('momo-error');
 

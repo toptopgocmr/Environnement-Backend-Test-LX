@@ -29,8 +29,8 @@ class PublicationPlanController extends Controller
         $data = $request->validate([
             'plan_id'        => 'required|exists:publication_plans,id',
             'billing'        => 'required|in:monthly,annual',
-            'payment_method' => 'required|in:mtn_momo,airtel_money,stripe,free',
-            'phone'          => 'required_if:payment_method,mtn_momo,airtel_money|nullable|string',
+            'payment_method' => 'required|in:peex,stripe,free',
+            'phone'          => 'required_if:payment_method,peex|nullable|string',
         ]);
 
         $plan = PublicationPlan::findOrFail($data['plan_id']);

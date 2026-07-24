@@ -18,8 +18,9 @@ class OrderController extends Controller
     {
         $data = $request->validate([
             'book_id'        => 'required|exists:books,id',
-            'payment_method' => 'required|in:mtn_momo,airtel_money,stripe,free',
-            'phone'          => 'required_if:payment_method,mtn_momo,airtel_money|nullable|string|max:20',
+            'payment_method' => 'required|in:peex,stripe,free',
+            'phone'          => 'required_if:payment_method,peex|nullable|string|max:20',
+            'country'        => 'nullable|string|size:2',
             'type'           => 'in:digital,print',
         ]);
 
@@ -53,6 +54,15 @@ class OrderController extends Controller
 
     public function callback(Request $request, string $method): JsonResponse
     {
+        // Peex sécurise ses callbacks par Basic Auth (voir doc "Notifications").
+        if ($method === 'peex') {
+            $expectedUser = config('services.peex.callback_username');
+            $expectedPass = config('services.peex.callback_password');
+            if ($expectedPass && !($request->getUser() === $expectedUser && $request->getPassword() === $expectedPass)) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+        }
+
         $result = $this->paymentService->handleCallback($method, $request->all());
         return response()->json($result);
     }
