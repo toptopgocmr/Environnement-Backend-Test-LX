@@ -33,7 +33,13 @@ class Order extends Model
     {
         parent::boot();
         static::creating(function ($o) {
-            $o->reference = 'LRX-' . strtoupper(Str::random(8));
+            // Alphanumérique STRICT, sans tiret : ce champ est envoyé tel quel
+            // à Peex comme track_id, qui le retransmet à l'opérateur (Airtel)
+            // comme "reference" — Airtel rejette tout caractère non
+            // alphanumérique (le "-" faisait échouer 100% des paiements Airtel
+            // Congo avec "reference ... should only contain alphanumeric
+            // characters").
+            $o->reference = 'LRX' . strtoupper(Str::random(9));
         });
     }
 

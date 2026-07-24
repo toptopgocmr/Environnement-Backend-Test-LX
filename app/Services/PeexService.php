@@ -154,7 +154,10 @@ class PeexService
         }
 
         try {
-            $trackId = 'PLAN-' . $authorPlan->id . '-' . strtoupper(Str::random(6));
+            // Alphanumérique strict (pas de tiret) : voir la même correction
+            // sur Order::reference — Airtel rejette les caractères non
+            // alphanumériques dans le champ "reference".
+            $trackId = 'PLAN' . $authorPlan->id . strtoupper(Str::random(6));
 
             $response = Http::withHeaders($this->headers())
                 ->post("{$this->baseUrl}/collection/request_payment", [
@@ -289,6 +292,13 @@ class PeexService
         if (str_contains($haystack, 'reject')) {
             return "Le paiement a été rejeté par l'opérateur mobile money.";
         }
+        if (str_contains($haystack, 'alphanumeric') || str_contains($haystack, 'reference')) {
+            // Erreur de configuration côté intégration (ex: track_id mal
+            // formé), pas un problème lié au client — on log le détail brut
+            // pour le debug et on affiche un message générique côté client.
+            Log::error('Peex/opérateur : erreur de format de référence', ['data' => $data]);
+            return "Le service de paiement est momentanément indisponible pour cet opérateur. Réessayez ou choisissez un autre moyen de paiement.";
+        }
 
         return is_string($raw) && $raw !== ''
             ? "Paiement échoué : {$raw}"
@@ -309,8 +319,9 @@ class PeexService
             $status  = $tx['status']   ?? null;
             if (!$trackId) continue;
 
-            // Forfaits auteur : track_id préfixé "PLAN-{id}-..."
-            if (str_starts_with($trackId, 'PLAN-')) {
+            // Forfaits auteur : track_id préfixé "PLAN{id}..." (les anciens
+            // "PLAN-{id}-..." avec tiret restent aussi reconnus).
+            if (str_starts_with($trackId, 'PLAN')) {
                 $authorPlan = AuthorPlan::where('transaction_id', $trackId)->first();
                 if (!$authorPlan || $authorPlan->status === 'active') continue;
 
