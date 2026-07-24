@@ -39,6 +39,51 @@ class PeexService
     }
 
     /**
+     * Construit un message d'erreur clair pour l'utilisateur à partir d'une
+     * réponse Peex en échec. La forme de la réponse d'erreur varie selon les
+     * cas documentés par Peex ({"error":{"message":...}}, {"error":"...",
+     * "message":"..."}, ou du JSON malformé pour "Service Unavailable") —
+     * on reste donc défensif et on retombe sur le texte brut si besoin.
+     */
+    private function friendlyError(\Illuminate\Http\Client\Response $response, ?array $data): string
+    {
+        $raw = null;
+        if (is_array($data)) {
+            if (isset($data['error']) && is_array($data['error']) && isset($data['error']['message'])) {
+                $raw = $data['error']['message'];
+            } elseif (isset($data['message']) && is_string($data['message'])) {
+                $raw = $data['message'];
+            } elseif (isset($data['error']) && is_string($data['error'])) {
+                $raw = $data['error'];
+            } elseif (isset($data['details']) && is_string($data['details'])) {
+                $raw = $data['details'];
+            }
+        }
+        // JSON non parsable (ex: réponse malformée côté Peex) : on regarde le texte brut.
+        $haystack = strtolower(($raw ?? '') . ' ' . $response->body());
+
+        if (str_contains($haystack, 'solde') || str_contains($haystack, 'balance') || str_contains($haystack, 'insuffic')) {
+            return "Solde insuffisant pour effectuer ce paiement. Rechargez votre compte mobile money puis réessayez.";
+        }
+        if ($response->status() === 401 || str_contains($haystack, 'secret') || str_contains($haystack, 'unauthorized')) {
+            return "Le service de paiement est mal configuré (clé invalide). Veuillez contacter le support.";
+        }
+        if (str_contains($haystack, 'unavailable') || str_contains($haystack, 'indisponible')) {
+            return "Le service de paiement mobile money est momentanément indisponible. Réessayez dans quelques instants ou choisissez un autre moyen de paiement.";
+        }
+        if ($response->status() === 404 || str_contains($haystack, 'not found') || str_contains($haystack, 'introuvable')) {
+            return "Numéro invalide ou non reconnu par cet opérateur. Vérifiez le numéro saisi.";
+        }
+        if ($response->status() === 422) {
+            return "Informations de paiement invalides. Vérifiez le numéro de téléphone et réessayez.";
+        }
+
+        return is_string($raw) && $raw !== ''
+            ? $raw
+            : "Échec du paiement. Veuillez réessayer ou choisir un autre moyen de paiement.";
+    }
+
+    /**
      * Démarre une collecte de fonds sur le wallet mobile money du client.
      *
      * @param Order  $order        Commande locale (son "reference" sert de track_id unique côté Peex).
@@ -68,14 +113,14 @@ class PeexService
                     'description'   => "Achat livre LireX - {$order->reference}",
                 ]);
 
-            $data = $response->json() ?? [];
+            $data = $response->json();
 
-            // Réponse imbriquée { error: { message } } en cas d'échec HTTP 4xx/5xx.
             if (!$response->successful()) {
-                $message = $data['error']['message'] ?? $data['message'] ?? 'Échec du paiement Peex.';
                 Log::error('Peex initiate failed', ['status' => $response->status(), 'body' => $response->body()]);
-                return ['success' => false, 'message' => $message];
+                return ['success' => false, 'message' => $this->friendlyError($response, $data)];
             }
+
+            $data ??= [];
 
             $order->update([
                 'transaction_id' => $order->reference,
@@ -122,13 +167,14 @@ class PeexService
                     'description'   => "Abonnement LireX - forfait #{$authorPlan->plan_id}",
                 ]);
 
-            $data = $response->json() ?? [];
+            $data = $response->json();
 
             if (!$response->successful()) {
-                $message = $data['error']['message'] ?? $data['message'] ?? 'Échec du paiement Peex.';
                 Log::error('Peex initiatePlan failed', ['status' => $response->status(), 'body' => $response->body()]);
-                return ['success' => false, 'message' => $message];
+                return ['success' => false, 'message' => $this->friendlyError($response, $data)];
             }
+
+            $data ??= [];
 
             $authorPlan->update(['transaction_id' => $trackId]);
 
