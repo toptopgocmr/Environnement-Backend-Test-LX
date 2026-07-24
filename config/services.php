@@ -25,6 +25,10 @@ return [
         'secret_key'        => env('PEEX_SECRET_KEY'),
         'callback_username' => env('PEEX_CALLBACK_USERNAME', 'peex'),
         'callback_password' => env('PEEX_CALLBACK_PASSWORD'),
+        // Codes pays ISO Alpha-2 où Peex peut collecter, ex: "CM,CG"
+        'collect_countries' => array_values(array_filter(array_map(
+            'trim', explode(',', strtoupper(env('PEEX_COLLECT_COUNTRIES', 'CM,CG')))
+        ))),
     ],
 
     // ─── Stripe ───────────────────────────────────────────────────────────────

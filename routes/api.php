@@ -29,6 +29,11 @@ Route::prefix('v1')->group(function () {
         $rates = \App\Models\ShippingRate::where('is_active', true)->orderBy('zone')->get();
         return response()->json(['success' => true, 'data' => $rates]);
     });
+
+    // Pays où Peex peut collecter (piloté par PEEX_COLLECT_COUNTRIES, sans redeploy)
+    Route::get('/payments/peex-countries', function () {
+        return response()->json(['success' => true, 'data' => ['countries' => config('services.peex.collect_countries', [])]]);
+    });
     Route::post('/books/{book}/translate', [TranslateController::class, 'translate']);
     Route::post('/payments/callback/{method}', [OrderController::class, 'callback'])
          ->name('api.payment.callback');
