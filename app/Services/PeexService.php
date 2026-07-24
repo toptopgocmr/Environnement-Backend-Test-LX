@@ -235,11 +235,64 @@ class PeexService
             $response = Http::withHeaders($this->headers())
                 ->get("{$this->baseUrl}/collection/all_requests", ['track_id' => $trackId]);
 
-            return $response->json() ?? ['status' => 'pending'];
+            $data = $response->json();
+            // La doc Peex elle-même est incohérente : l'exemple "Collection
+            // Requests" renvoie un objet, mais leur propre exemple de polling
+            // ("Transaction Status") fait `data[0]` sur une liste. On gère les deux.
+            if (is_array($data) && array_is_list($data)) {
+                $data = $data[0] ?? null;
+            }
+            $data ??= ['status' => 'pending'];
+
+            // Sur échec, la raison réelle est dans payment_proof / message —
+            // sans ça le frontend ne peut afficher qu'un message générique
+            // (ex: impossible de distinguer "solde insuffisant" d'un simple refus).
+            if (in_array($data['status'] ?? null, ['failed', 'canceled', 'rejected'], true)) {
+                $data['message'] = $this->describeFailure($data);
+            }
+
+            return $data;
         } catch (\Exception $e) {
             Log::error('Peex check status: ' . $e->getMessage());
             return ['status' => 'pending'];
         }
+    }
+
+    /**
+     * Traduit la raison d'échec Peex (payment_proof/message, souvent du texte
+     * opérateur brut) en message clair pour l'utilisateur.
+     */
+    private function describeFailure(array $data): string
+    {
+        $raw = null;
+        foreach (['payment_proof', 'message', 'details'] as $key) {
+            if (isset($data[$key]) && is_string($data[$key]) && $data[$key] !== '') {
+                $raw = $data[$key];
+                break;
+            }
+        }
+        $haystack = strtolower(($raw ?? '') . ' ' . json_encode($data));
+
+        if (str_contains($haystack, 'solde') || str_contains($haystack, 'balance') || str_contains($haystack, 'insuffic')) {
+            return "Solde insuffisant sur le compte mobile money utilisé. Rechargez le compte puis réessayez.";
+        }
+        if (str_contains($haystack, 'timeout') || str_contains($haystack, 'expir')) {
+            return "Le délai de confirmation a expiré. Le paiement n'a pas été validé à temps sur le téléphone.";
+        }
+        if ((str_contains($haystack, 'invalid') || str_contains($haystack, 'not found') || str_contains($haystack, 'introuvable'))
+            && (str_contains($haystack, 'number') || str_contains($haystack, 'phone') || str_contains($haystack, 'msisdn') || str_contains($haystack, 'numéro'))) {
+            return "Numéro de téléphone invalide ou compte mobile money introuvable chez cet opérateur. Vérifiez le numéro saisi.";
+        }
+        if (str_contains($haystack, 'cancel') || str_contains($haystack, 'annul')) {
+            return "Le paiement a été annulé.";
+        }
+        if (str_contains($haystack, 'reject')) {
+            return "Le paiement a été rejeté par l'opérateur mobile money.";
+        }
+
+        return is_string($raw) && $raw !== ''
+            ? "Paiement échoué : {$raw}"
+            : "Le paiement a échoué. Vérifiez le solde et le numéro de téléphone, puis réessayez.";
     }
 
     /**

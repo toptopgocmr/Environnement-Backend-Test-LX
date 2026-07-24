@@ -90,8 +90,8 @@ class OrderController extends Controller
         }
 
         if (in_array($peexStatus, ['failed', 'canceled', 'rejected'], true)) {
-            $order->update(['payment_status' => 'failed']);
-            return response()->json(['success' => true, 'status' => 'failed']);
+            $order->update(['payment_status' => 'failed', 'payment_data' => $result]);
+            return response()->json(['success' => true, 'status' => 'failed', 'message' => $result['message'] ?? null]);
         }
 
         return response()->json(['success' => true, 'status' => 'pending']);
