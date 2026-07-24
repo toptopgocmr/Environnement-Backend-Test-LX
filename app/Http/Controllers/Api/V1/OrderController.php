@@ -49,7 +49,7 @@ class OrderController extends Controller
         }
 
         $result = $this->paymentService->initiate($data, $book, $user);
-        return response()->json(['success' => $result['success'], 'data' => $result]);
+        return response()->json(['success' => $result['success'], 'data' => $result], $result['success'] ? 200 : 422);
     }
 
     public function callback(Request $request, string $method): JsonResponse
@@ -69,9 +69,10 @@ class OrderController extends Controller
 
     public function myOrders(): JsonResponse
     {
+        // Toutes les commandes (payées, en attente, échouées) — le statut
+        // s'affiche tel quel côté frontend (✓ Payé / ⏳ En attente / ✗ Échoué).
         $orders = Auth::user()->orders()
             ->with(['book:id,title,cover_image,author_id', 'book.author:id,name'])
-            ->where('payment_status', 'paid')
             ->latest()->paginate(20);
         return response()->json(['success' => true, 'data' => $orders]);
     }
