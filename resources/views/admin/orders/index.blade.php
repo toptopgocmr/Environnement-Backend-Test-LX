@@ -58,7 +58,7 @@
     </thead>
     <tbody>
       @forelse($orders as $order)
-      <tr class="border-b border-slate-50 hover:bg-slate-50/50">
+      <tr class="border-b border-slate-50 hover:bg-slate-50/50" id="order-row-{{ $order->id }}">
         <td class="px-5 py-3 font-mono text-blue-600 text-xs font-semibold">{{ $order->reference }}</td>
         <td class="px-5 py-3">
           <div class="flex items-center gap-2">
@@ -79,7 +79,16 @@
         </td>
         <td class="px-5 py-3">
           @php $s=['paid'=>'badge-published','pending'=>'badge-pending','failed'=>'badge-rejected','refunded'=>'badge-draft']; @endphp
-          <span class="{{ $s[$order->payment_status] ?? 'badge-draft' }}">{{ ucfirst($order->payment_status) }}</span>
+          <div class="flex items-center gap-2">
+            <span class="status-badge {{ $s[$order->payment_status] ?? 'badge-draft' }}">{{ ucfirst($order->payment_status) }}</span>
+            @if($order->payment_method === 'peex' && $order->payment_status === 'pending')
+            <button type="button" title="Vérifier le statut auprès de Peex"
+              onclick="refreshOrderStatus({{ $order->id }}, this)"
+              class="text-slate-400 hover:text-blue-600 transition text-xs">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+            @endif
+          </div>
         </td>
         <td class="px-5 py-3 text-slate-400 text-xs">{{ $order->created_at->format('d/m/Y H:i') }}</td>
       </tr>
@@ -91,3 +100,47 @@
   <div class="px-5 py-4 border-t border-slate-100">{{ $orders->withQueryString()->links() }}</div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '';
+const STATUS_BADGE = { paid: 'badge-published', pending: 'badge-pending', failed: 'badge-rejected', refunded: 'badge-draft' };
+const STATUS_LABEL = { paid: 'Paid', pending: 'Pending', failed: 'Failed', refunded: 'Refunded' };
+
+async function refreshOrderStatus(orderId, btn) {
+  const icon = btn.querySelector('i');
+  btn.disabled = true;
+  icon.classList.add('fa-spin');
+
+  try {
+    const res = await fetch(`/admin/orders/${orderId}/refresh-status`, {
+      method: 'POST',
+      headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+    });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      alert(json.message || "Impossible de vérifier le statut.");
+      return;
+    }
+
+    if (json.status && json.status !== 'pending') {
+      const row = document.getElementById(`order-row-${orderId}`);
+      const badge = row?.querySelector('.status-badge');
+      if (badge) {
+        badge.className = 'status-badge ' + (STATUS_BADGE[json.status] || 'badge-draft');
+        badge.textContent = STATUS_LABEL[json.status] || json.status;
+      }
+      btn.remove(); // plus la peine de réactualiser une commande devenue définitive
+    } else {
+      icon.classList.remove('fa-spin');
+      btn.disabled = false;
+    }
+  } catch (e) {
+    alert("Erreur réseau lors de la vérification du statut.");
+    icon.classList.remove('fa-spin');
+    btn.disabled = false;
+  }
+}
+</script>
+@endpush

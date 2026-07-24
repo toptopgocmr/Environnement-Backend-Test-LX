@@ -78,6 +78,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     // Commandes digitales
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [Admin\OrderController::class, 'index'])->name('index');
+        Route::post('/{order}/refresh-status', [Admin\OrderController::class, 'refreshStatus'])->name('refresh-status');
     });
 
     // Commandes physiques
