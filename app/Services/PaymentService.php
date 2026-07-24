@@ -15,15 +15,28 @@ class PaymentService
 
     public function initiate(array $data, Book $book, User $user): array
     {
-        $order = Order::create([
-            'user_id'        => $user->id,
-            'book_id'        => $book->id,
-            'amount'         => $book->price,
-            'currency'       => $book->currency,
-            'payment_method' => $data['payment_method'],
-            'payment_status' => 'pending',
-            'type'           => $data['type'] ?? 'digital',
-        ]);
+        // Réutilise une commande déjà en attente pour ce livre plutôt que d'en
+        // recréer une à chaque clic sur "Payer" (retry, changement d'opérateur…).
+        $order = Order::where('user_id', $user->id)
+            ->where('book_id', $book->id)
+            ->where('payment_status', 'pending')
+            ->where('created_at', '>=', now()->subMinutes(30))
+            ->latest()
+            ->first();
+
+        if ($order) {
+            $order->update(['payment_method' => $data['payment_method']]);
+        } else {
+            $order = Order::create([
+                'user_id'        => $user->id,
+                'book_id'        => $book->id,
+                'amount'         => $book->price,
+                'currency'       => $book->currency,
+                'payment_method' => $data['payment_method'],
+                'payment_status' => 'pending',
+                'type'           => $data['type'] ?? 'digital',
+            ]);
+        }
 
         return match($data['payment_method']) {
             'peex'  => $this->peex->initiate($order, $data['phone'], $user->name, $data['country'] ?? 'CG'),

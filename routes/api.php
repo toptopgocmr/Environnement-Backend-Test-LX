@@ -72,6 +72,7 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/orders/initiate',            [OrderController::class, 'initiate']);
         Route::get('/orders',                      [OrderController::class, 'myOrders']);
+        Route::get('/orders/{order}/status',       [OrderController::class, 'status']);
         Route::post('/orders/{order}/download-link',[OrderController::class, 'downloadLink']);
 
         Route::post('/physical/orders',            [PhysicalOrderController::class, 'initiate']);

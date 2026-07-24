@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\{User, Book, Order, Category, Review, Royalty, ReadingProgress};
-use App\Services\PaymentService;
+use App\Services\{PaymentService, PeexService};
 use Illuminate\Http\{Request, JsonResponse};
-use Illuminate\Support\Facades\{Auth, Hash, Storage};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Storage};
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 // ORDERS / PAYMENT API
@@ -65,6 +65,36 @@ class OrderController extends Controller
 
         $result = $this->paymentService->handleCallback($method, $request->all());
         return response()->json($result);
+    }
+
+    /**
+     * Polling front-end pendant l'attente de confirmation Peex (bouton Payer).
+     * Interroge Peex si la commande est encore 'pending' et met à jour son statut.
+     */
+    public function status(Order $order): JsonResponse
+    {
+        if ($order->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+        }
+
+        if ($order->payment_status !== 'pending' || $order->payment_method !== 'peex' || !$order->transaction_id) {
+            return response()->json(['success' => true, 'status' => $order->payment_status]);
+        }
+
+        $result = app(PeexService::class)->checkStatus($order->transaction_id);
+        $peexStatus = $result['status'] ?? null;
+
+        if ($peexStatus === 'paid') {
+            DB::transaction(fn () => PaymentService::createRoyalty($order));
+            return response()->json(['success' => true, 'status' => 'paid']);
+        }
+
+        if (in_array($peexStatus, ['failed', 'canceled', 'rejected'], true)) {
+            $order->update(['payment_status' => 'failed']);
+            return response()->json(['success' => true, 'status' => 'failed']);
+        }
+
+        return response()->json(['success' => true, 'status' => 'pending']);
     }
 
     public function myOrders(): JsonResponse
